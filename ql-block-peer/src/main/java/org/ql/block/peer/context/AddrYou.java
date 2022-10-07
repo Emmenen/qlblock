@@ -22,7 +22,6 @@ public class AddrYou {
   @Autowired
   private ClientThread clientRunnable;
 
-
   private HashSet<Peer> addrYouSet = new HashSet<>();
 
   @Autowired
@@ -56,5 +55,12 @@ public class AddrYou {
     if (add)
       ThreadFactory.cachedThreadPool.execute(clientRunnable);
     return add;
+  }
+
+  public boolean remove(Peer peer){
+    boolean remove = addrYouSet.remove(peer);
+    if (remove)
+      ThreadFactory.cachedThreadPool.execute(clientRunnable);
+    return remove;
   }
 }

@@ -15,10 +15,8 @@ import java.util.List;
  */
 
 @Component("peerContext")
-public class PeerContext {
+public class PeerContext extends VersionContext {
 
-    @Autowired
-    private AddrYou addrYou;
 
     @Autowired
     private Peer addrMe;
@@ -29,16 +27,21 @@ public class PeerContext {
 //    private List<MySocket> socketList = new ArrayList<>();
 
 
-    public List<Peer> getConnectList() {
+    /**
+     * 给获取已经连接的节点列表加同步锁，
+     * @return
+     */
+    public synchronized List<Peer> getConnectList() {
         return connectList;
     }
 
-    public ArrayList<MySocket> getSocketList(){
+
+    public synchronized ArrayList<MySocket> getSocketList(){
         return new ArrayList<>(socketHashSet);
     }
 
-    public ArrayList<Peer> getUnConnectList() {
-        ArrayList<Peer> peers = addrYou.toArrayListCopy();
+    public synchronized ArrayList<Peer> getUnConnectList() {
+        ArrayList<Peer> peers = getAddrYou().toArrayListCopy();
         peers.removeAll(getConnectList());
         peers.remove(addrMe);
         return peers;
@@ -47,26 +50,36 @@ public class PeerContext {
     public PeerContext() {
     }
 
-    public AddrYou getAddrYou() {
-        return addrYou;
+
+    public synchronized boolean addToAddrYou(Peer peer){
+       return this.getAddrYou().add(peer);
+    }
+    public synchronized boolean removeAddrYou(Peer peer){
+       return this.getAddrYou().remove(peer);
+    }
+    public synchronized boolean addOnePeer(MySocket socket){
+       return addToAddrYou(socket.getPeer()) && addSocketToList(socket);
+    }
+    public synchronized boolean removeOnePeer(MySocket socket){
+       return removeAddrYou(socket.getPeer()) && removeSocketToList(socket);
     }
 
-    public boolean addToAddrYou(Peer peer){
-       return this.addrYou.add(peer);
+    public synchronized boolean addToAddrYou(HashSet<Peer> peerList){
+       return this.getAddrYou().addAll(peerList);
     }
 
-    public boolean addToAddrYou(HashSet<Peer> peerList){
-       return this.addrYou.addAll(peerList);
-    }
-
-    public void addSocketToList(MySocket socket){
-        if (socketHashSet.add(socket)) {
-            connectList.add(socket.getPeer());
+    public boolean addSocketToList(MySocket socket){
+        boolean add = socketHashSet.add(socket);
+        if (add) {
+            getConnectList().add(socket.getPeer());
         }
+        return add;
     }
-    public void deleteSocketToList(MySocket socket){
-        if (socketHashSet.remove(socket)) {
-            connectList.remove(socket.getPeer());
+    public boolean removeSocketToList(MySocket socket){
+        boolean remove = socketHashSet.remove(socket);
+        if (remove) {
+            getConnectList().remove(socket.getPeer());
         }
+        return remove;
     }
 }

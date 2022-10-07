@@ -1,12 +1,16 @@
 package org.ql.block.ledger.model.blockchain;
 
 import org.jetbrains.annotations.NotNull;
+import org.ql.block.ledger.exceptions.GetBlockError;
 import org.ql.block.ledger.model.block.TaskBlock;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.ledger.db.Database;
 import org.ql.block.ledger.model.block.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -27,12 +31,13 @@ public class TaskBlockChain extends BlockChain{
     return new TaskBlock("genesis", new BlockData("genesis"));
   }
 
+
+
   @Override
-  public void addBlock(BlockData data){
-    TaskBlock block;
-    block = new TaskBlock(tip, data);
-    addBlock(block);
+  public LinkedList<Block> getBlocks(int offset, int number) throws GetBlockError {
+    return super.getBlocks(offset,number);
   }
+
   @Override
   public void addBlock(@NotNull Block taskBlock) {
     if (taskBlock instanceof TaskBlock){

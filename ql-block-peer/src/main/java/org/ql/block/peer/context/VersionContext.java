@@ -2,11 +2,10 @@ package org.ql.block.peer.context;
 
 import lombok.Data;
 import org.ql.block.ledger.service.MasterChainService;
-import org.ql.block.peer.communication.message.child.Version;
+import org.ql.block.peer.communication.message.messageModel.Version;
 import org.ql.block.peer.model.Peer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
@@ -17,9 +16,8 @@ import java.util.Date;
  * email: 592918942@qq.com
  * 保存当前节点的Version信息的上下文对象
  */
-@Component("versionContext")
 @Data
-public class VersionContext {
+class VersionContext {
 
   @Value("${qlblock.peer.version}")
   private String nVersion;
@@ -38,10 +36,13 @@ public class VersionContext {
 
   private int BestHeight;
 
+  public int getBestHeight() {
+    return masterChainService.getBlockHeight();
+  }
 
   //获取一个Version对象。
   public Version getVersion(){
-    return new Version(nVersion,new Date(),addrYou.getAddrYouSet(),addrMe,masterChainService.getBlockHeight());
+    return new Version(nVersion,new Date(),addrYou.getAddrYouSet(),addrMe,getBestHeight());
   }
 
   @Override

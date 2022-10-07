@@ -1,7 +1,6 @@
 package org.ql.block.peer.service;
 
-import org.ql.block.ledger.util.ObjectUtil;
-import org.ql.block.peer.communication.message.Message;
+import org.ql.block.peer.communication.message.messageModel.Message;
 import org.ql.block.peer.communication.message.MessageType;
 import org.ql.block.peer.communication.message.MessageVO;
 import org.ql.block.peer.context.PeerContext;

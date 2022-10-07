@@ -10,6 +10,18 @@ import org.ql.block.ledger.model.blockdata.Transaction;
  */
 public class MasterBlock extends Block {
 
+  @Override
+  public String toString() {
+    return "MasterBlock{" +
+            "previousHash='" + previousHash + '\'' +
+            ", currentHash='" + currentHash + '\'' +
+            ", nonce=" + nonce +
+            ", data=" + data.getTextData() +
+            '}';
+  }
+
+
+
   public MasterBlock(String previousHash, BlockData data) {
 
     super(previousHash, data);

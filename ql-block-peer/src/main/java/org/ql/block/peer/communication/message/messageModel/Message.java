@@ -1,4 +1,4 @@
-package org.ql.block.peer.communication.message;
+package org.ql.block.peer.communication.message.messageModel;
 
 import java.io.Serializable;
 

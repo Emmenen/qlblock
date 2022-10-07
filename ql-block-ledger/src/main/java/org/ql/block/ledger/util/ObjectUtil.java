@@ -9,21 +9,27 @@ import java.io.*;
  */
 public class ObjectUtil<T> {
 
-  public static Object byteArrayToObject(byte[] object){
+  public static Object byteArrayToObject(byte[] object) {
     ByteArrayInputStream bin = new ByteArrayInputStream(object);
-    return inputSteamToObject(bin);
-  }
-  public static Object inputSteamToObject(InputStream inputStream){
+    Object o = null;
     try {
-      ObjectInputStream oin = new ObjectInputStream(inputStream);
-      Object o = oin.readObject();
-      return o;
+      o = inputSteamToObject(bin);
     } catch (IOException e) {
       e.printStackTrace();
+    }
+    return o;
+  }
+  public static Object inputSteamToObject(InputStream inputStream) throws IOException {
+
+    ObjectInputStream oin = new ObjectInputStream(inputStream);
+    Object o = null;
+    try {
+      o = oin.readObject();
+
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     }
-    return null;
+    return o;
   }
 
   public static byte[] ObjectToByteArray(Object object) {

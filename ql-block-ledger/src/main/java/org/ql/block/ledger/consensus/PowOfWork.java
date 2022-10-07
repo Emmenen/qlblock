@@ -14,7 +14,7 @@ import java.math.BigInteger;
  * Author: @Qi Long
  * email: 592918942@qq.com
  */
-@Service
+@Service("powOfWork")
 public class PowOfWork {
 
   @Autowired
@@ -30,7 +30,7 @@ public class PowOfWork {
 
 
   public String prepareData(Block block){
-    return block.getPreviousHash() + Integer.toHexString(block.hashCode()) + Long.toHexString(block.timestamp.getTime()) + target.toString(16) + Integer.toHexString(block.nonce);
+    return block.getPreviousHash() + Integer.toHexString(block.hashCode()) + target.toString(16) + Integer.toHexString(block.nonce);
   }
 
   /**

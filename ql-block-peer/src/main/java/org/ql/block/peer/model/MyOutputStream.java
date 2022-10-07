@@ -1,14 +1,11 @@
 package org.ql.block.peer.model;
 
 import org.ql.block.ledger.util.ObjectUtil;
-import org.ql.block.peer.communication.message.Message;
 import org.ql.block.peer.communication.message.MessageVO;
 import org.ql.block.peer.config.MsgConfig;
-import org.ql.block.peer.communication.message.MessageType;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**

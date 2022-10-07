@@ -1,6 +1,6 @@
-package org.ql.block.peer.communication.message.child;
+package org.ql.block.peer.communication.message.messageModel;
 
-import org.ql.block.peer.communication.message.Message;
+import org.ql.block.peer.communication.message.messageModel.Message;
 import org.ql.block.peer.communication.message.MessageType;
 import org.ql.block.peer.model.Peer;
 

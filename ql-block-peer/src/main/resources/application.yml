@@ -8,3 +8,11 @@ qlblock:
     version: 0.0.1-SNAPSHOT
 server:
   port: 8080
+spring:
+  cache:
+    type: redis
+    redis:
+      cache-null-values: true
+  redis:
+    redisson:
+      config: classpath:redisson.yml

@@ -3,6 +3,7 @@ package org.ql.block.ledger.model.blockchain;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
+import org.ql.block.ledger.exceptions.GetBlockError;
 import org.ql.block.ledger.model.block.MasterBlock;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.ledger.model.blockdata.TXInput;
@@ -11,7 +12,6 @@ import org.ql.block.ledger.model.blockdata.Transaction;
 import org.ql.block.ledger.db.Database;
 import org.ql.block.ledger.exceptions.BalanceNotEnoughError;
 import org.ql.block.ledger.model.block.Block;
-import org.ql.block.ledger.util.MathUtils;
 import org.ql.block.ledger.util.ObjectUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -39,11 +39,12 @@ public class MasterBlockChain extends BlockChain{
     return masterBlock;
   }
 
-  public void addBlock(BlockData data){
-    MasterBlock block;
-    block = new MasterBlock(tip, data);
-    addBlock(block);
+
+  @Override
+  public LinkedList<Block> getBlocks(int offset, int number) throws GetBlockError {
+    return super.getBlocks(offset,number);
   }
+
   @Override
   public void addBlock(@NotNull Block masterBlock) {
     if (masterBlock instanceof MasterBlock){
@@ -61,9 +62,11 @@ public class MasterBlockChain extends BlockChain{
 
   }
 
-  public byte[] getData(String key){
-    byte[] bytes = bucketBucketDb.get(Iq80DBFactory.bytes(key));
-    return bytes;
+
+
+  @Override
+  public DB getBlockDB() {
+    return super.getBlockDB();
   }
 
   public int getBalance(String address){
@@ -83,7 +86,7 @@ public class MasterBlockChain extends BlockChain{
      */
     HashMap<String, Integer> spendTXOut = new HashMap<>();
     List<Transaction> unSpendTX = new ArrayList<>();
-    DB bucket = getBlock();
+    DB bucket = getBlockDB();
     bucket.forEach(k->{
       if (!Iq80DBFactory.asString(k.getKey()).equals("l")){
         Block block = (Block) ObjectUtil.byteArrayToObject(k.getValue());

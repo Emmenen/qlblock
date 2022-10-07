@@ -46,6 +46,14 @@ public class MySocket extends Socket{
         return getPeer().hashCode();
     }
 
+
+    @Override
+    public String toString() {
+        return "{" +
+                "peer=" + peer +
+                '}';
+    }
+
     public int getPort(){
         return socket.getPort();
     }

@@ -1,6 +1,7 @@
 package org.ql.block.peer.communication.message;
 
 import lombok.Data;
+import org.ql.block.peer.communication.message.messageModel.Message;
 
 import java.io.Serializable;
 

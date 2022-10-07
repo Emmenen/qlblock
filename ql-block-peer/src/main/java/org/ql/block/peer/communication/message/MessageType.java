@@ -10,8 +10,9 @@ public enum MessageType {
 
     GOSSIP_VERSION,
 
-    NEW_ADDR_YOU,NEW_ADDR_YOU_OK;
+    NEW_ADDR_YOU,NEW_ADDR_YOU_OK,
 
+    GET_BLOCKS, BLOCKS_LIST, BLOCKS_OK;
 
 
     MessageType() {

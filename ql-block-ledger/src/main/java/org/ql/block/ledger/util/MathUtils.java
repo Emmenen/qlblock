@@ -32,4 +32,9 @@ public class MathUtils {
     result[3] = (byte) (i & 0xFF);
     return result;
   }
+
+  public static void main(String[] args) {
+    byte[] bytes = intToByteArray(100);
+    int i = byteArrayToInt(bytes);
+  }
 }

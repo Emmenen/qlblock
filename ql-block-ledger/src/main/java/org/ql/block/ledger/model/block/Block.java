@@ -37,6 +37,7 @@ public abstract class Block implements Serializable {
     return new String(currentHash);
   }
 
+
   @Override
   public int hashCode(){
     return data.hashCode();
@@ -56,6 +57,7 @@ public abstract class Block implements Serializable {
     int nonce = powOfWorkForm.nonce;
     this.currentHash = hash;
     this.nonce = nonce;
+    this.timestamp = new Date();
     this.miner = powOfWorkForm.miner;
   }
 

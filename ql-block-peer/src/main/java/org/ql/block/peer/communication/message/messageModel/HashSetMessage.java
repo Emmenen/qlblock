@@ -1,7 +1,7 @@
-package org.ql.block.peer.communication.message.child;
+package org.ql.block.peer.communication.message.messageModel;
 
 import lombok.Data;
-import org.ql.block.peer.communication.message.Message;
+import org.ql.block.peer.communication.message.messageModel.Message;
 import org.ql.block.peer.model.Peer;
 
 import java.util.HashSet;

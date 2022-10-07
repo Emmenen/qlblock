@@ -32,11 +32,13 @@ public class ServerThread implements Runnable{
             while (true){
                 log.info("等待新连接...");
                 Socket accept = server.accept();
-                System.out.println("来自"+accept.getPort()+"的连接成功");
                 clientThreadPool.startAClient(accept);
+                System.out.println("来自"+accept.getPort()+"的连接成功");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            if (server.isClosed()){
+                log.info("节点停止");
+            }
         }
     }
 }
