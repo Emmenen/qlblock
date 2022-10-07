@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.ql.block</groupId>
+    <artifactId>ql-block</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>ql-block-peer</module>
+        <module>ql-block-ledger</module>
+        <module>ql-block-browser</module>
+    </modules>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <ql.block.verison>0.0.1-SNAPSHOT</ql.block.verison>
+        <spring-boot.version>2.2.1.RELEASE</spring-boot.version>
+        <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
+        <cos_api.version>5.6.45</cos_api.version>
+        <lombok.version>1.18.20</lombok.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <optional>true</optional>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.qcloud</groupId>
+                <artifactId>cos_api</artifactId>
+                <version>${cos_api.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.code.gson</groupId>
+                        <artifactId>gson</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.8.9</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>1.60</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.fusesource.leveldbjni/leveldbjni -->
+            <dependency>
+                <groupId>org.fusesource.leveldbjni</groupId>
+                <artifactId>leveldbjni</artifactId>
+                <version>1.8</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb-api -->
+            <dependency>
+                <groupId>org.iq80.leveldb</groupId>
+                <artifactId>leveldb-api</artifactId>
+                <version>0.10</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb -->
+            <dependency>
+                <groupId>org.iq80.leveldb</groupId>
+                <artifactId>leveldb</artifactId>
+                <version>0.10</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>1.2.58</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.bitcoin-s/bitcoin-s-core -->
+            <!--        <dependency>-->
+            <!--            <groupId>org.bitcoin-s</groupId>-->
+            <!--            <artifactId>bitcoin-s-core_2.13</artifactId>-->
+            <!--            <version>1.9.2</version>-->
+            <!--            <type>jar</type>-->
+            <!--            <scope>system</scope>-->
+            <!--            <systemPath>${basedir}/src/main/resources/bitcoin-s-core_2.13-1.9.2.jar</systemPath>-->
+            <!--        </dependency>-->
+            <!-- https://mvnrepository.com/artifact/org.scala-lang/scala-library -->
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>2.13.8</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.scodec/scodec-bits -->
+            <dependency>
+                <groupId>org.scodec</groupId>
+                <artifactId>scodec-bits_3</artifactId>
+                <version>1.1.34</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.bitcoins/bitcoin-s-core -->
+            <dependency>
+                <groupId>org.bitcoins</groupId>
+                <artifactId>bitcoin-s-core_2.12</artifactId>
+                <version>0.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>RELEASE</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <compilerArguments>
+                        <verbose />
+                        <bootclasspath>${java.home}\lib\rt.jar;${java.home}\lib\jce.jar</bootclasspath>
+                    </compilerArguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
