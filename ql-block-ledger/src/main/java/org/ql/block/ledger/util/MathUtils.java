@@ -33,8 +33,4 @@ public class MathUtils {
     return result;
   }
 
-  public static void main(String[] args) {
-    byte[] bytes = intToByteArray(100);
-    int i = byteArrayToInt(bytes);
-  }
 }

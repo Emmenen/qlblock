@@ -122,12 +122,12 @@ public abstract class BlockChain {
       //从账本顶部开始检索，找到offset处，从offset往后取出number个
       int count = 0;
       Block block = getBlock(tip);
-      blockList.addLast(block);
+      blockList.addFirst(block);
       count++;
       int var2 = var1 + 1;
       while (count<var2){
         block = getBlock(block.previousHash);
-        blockList.addLast(block);
+        blockList.addFirst(block);
         count++;
       }
     }
@@ -148,8 +148,8 @@ public abstract class BlockChain {
 
   public void addBlock(@NotNull Block block) {
     this.tip = block.currentHash;
-    this.deep++;
     log.info("当前区块高度："+deep);
+    this.deep++;
     database.update(BLOCK_BUCKET, bucket ->{
       bucket.put(Iq80DBFactory.bytes(block.currentHash),ObjectToByteArray(block));
       log.info("添加新的区块到链上(perHash: {})",block.previousHash);
@@ -164,26 +164,13 @@ public abstract class BlockChain {
   public boolean addBlockAllStrict(Collection<Block> c)  {
     // 保证最后添加到账本中的区块是最新的就可以；
     Iterator<Block> iterator = c.iterator();
-    Block first = iterator.next();
-    if (getLastHash().equals(first.getPreviousHash())) {
-      throw new BlockOrderError("区块清单顺序有误！");
-    }
-    String preHash = first.getCurrentHash();
-    addBlock(first);
-    String previousHash;
-    String currentHash;
 
     while (iterator.hasNext()){
-
       Block next = iterator.next();
-      previousHash = next.getCurrentHash();
-
-      if (!Objects.equals(previousHash, preHash)){
+      if (!getLastHash().equals(next.getPreviousHash())){
         throw new BlockOrderError("区块清单顺序有误！");
       }
       addBlock(next);
-      currentHash = next.getCurrentHash();
-      preHash = currentHash;
     }
     return true;
   }
