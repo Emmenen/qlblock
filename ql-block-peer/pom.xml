@@ -14,12 +14,18 @@
         <dependency>
             <groupId>org.ql.block</groupId>
             <artifactId>ql-block-ledger</artifactId>
-            <version>${ql.block.verison}</version>
         </dependency>
         <dependency>
             <groupId>org.ql.block</groupId>
             <artifactId>ql-block-browser</artifactId>
-            <version>${ql.block.verison}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ql.block</groupId>
+            <artifactId>ql-block-section</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ql.block</groupId>
+            <artifactId>ql-block-common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

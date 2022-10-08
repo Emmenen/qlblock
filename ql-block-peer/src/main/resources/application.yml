@@ -6,5 +6,8 @@ qlblock:
     ip: 127.0.0.1
     port: 8002
     version: 0.0.1-SNAPSHOT
+  ledger:
+    wallet:
+      key: 2RxV4m78RGjpDZ5VV6TTtkSkRKgEC58qoYKq5rA4jkjPUbhnCXU6Uq3a9y6kq3eMgse9hWHTFDkVWPeisyzuXANQ95fQ
 server:
   port: 8080

@@ -2,6 +2,7 @@ package org.ql.block.ledger.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.ql.block.ledger.exceptions.WalletInformationError;
 import sun.security.ec.ECOperations;
 import sun.security.ec.ECPrivateKeyImpl;
 import sun.security.ec.point.AffinePoint;
@@ -94,7 +95,14 @@ public class CryptoUtils {
     return encrypt_hash_function(str, ALGORITHM_SHA256, CHAT_SET_UTF8, ENCODE_STRING_BASE58);
   }
 
-
+  /**
+   *
+   * @param str
+   * @param algorithm
+   * @param chatset
+   * @param encodeMethod
+   * @return
+   */
   private static String encrypt_hash_function(String str, String algorithm, String chatset, String encodeMethod) {
     MessageDigest messageDigest;
     String encodeStr = "";
@@ -107,11 +115,10 @@ public class CryptoUtils {
       if (ENCODE_STRING_BASE64.equals(encodeMethod)) {
         encodeStr = byte2Base64(digest_bytes);
       } else if (ENCODE_STRING_BASE58.equals(encodeMethod)) {
-        encodeStr = Base58.encode(digest_bytes);
+        encodeStr = Base58.encode(new String(digest_bytes));
       } else {
         encodeStr = byte2Hex(digest_bytes);
       }
-
     } catch (Exception e) {
       log.error("", e);
     }
@@ -144,17 +151,18 @@ public class CryptoUtils {
    * @param ecPrivateKey
    * @return
    */
-  public static byte[] privateKeyFormat(ECPrivateKey ecPrivateKey){
+  public static String privateKeyFormat(ECPrivateKey ecPrivateKey){
     byte[] encoded = ecPrivateKey.getEncoded();
     PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(encoded);
-    return Base64.getEncoder().encode(pkcs8EncodedKeySpec.getEncoded());
+
+    return Base58.encode(pkcs8EncodedKeySpec.getEncoded());
   }
 
   public static void privateKeyStore(File file, ECPrivateKey ecPrivateKey){
-    byte[] keyFormat = privateKeyFormat(ecPrivateKey);
+    String keyFormat = privateKeyFormat(ecPrivateKey);
     try {
       FileOutputStream out = new FileOutputStream(file);
-      out.write(keyFormat);
+      out.write(keyFormat.getBytes());
       out.close();
     } catch (FileNotFoundException e) {
       file.mkdirs();
@@ -163,15 +171,15 @@ public class CryptoUtils {
     }
   }
 
-  public static PrivateKey privateKeyReStore(byte[] encode){
+  public static PrivateKey privateKeyReStore(byte[] encode) throws WalletInformationError {
     PrivateKey privateKey = null;
     try {
       KeyFactory ec = KeyFactory.getInstance("EC");
       privateKey = ec.generatePrivate(new PKCS8EncodedKeySpec(encode));
-    } catch (NoSuchAlgorithmException e) {
+    } catch (NoSuchAlgorithmException e){
       e.printStackTrace();
     } catch (InvalidKeySpecException e) {
-      e.printStackTrace();
+      throw new WalletInformationError("钱包信息出错");
     }
     return privateKey;
   }

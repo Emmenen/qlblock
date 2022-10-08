@@ -3,7 +3,7 @@ package org.ql.block.ledger.model.block;
 import org.ql.block.ledger.consensus.PowOfWork;
 import org.ql.block.ledger.consensus.PowOfWorkForm;
 import org.ql.block.ledger.model.blockdata.BlockData;
-import org.ql.block.ledger.config.SpringContextUtil;
+import org.ql.block.common.config.SpringContextUtil;
 
 import java.io.Serializable;
 import java.util.Date;

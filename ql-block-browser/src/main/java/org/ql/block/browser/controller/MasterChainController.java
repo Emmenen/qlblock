@@ -33,4 +33,10 @@ public class MasterChainController {
     masterChainService.addBlock(test);
     return ResponseVo.ok(test);
   }
+  @PostMapping("/connectWallet")
+  public ResponseVo<MasterBlock> connectWallet(){
+    MasterBlock test = new MasterBlock(masterChainService.getLastHash(), new BlockData("test"));
+    masterChainService.addBlock(test);
+    return ResponseVo.ok(test);
+  }
 }

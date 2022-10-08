@@ -1,4 +1,4 @@
-package org.ql.block.ledger.config;
+package org.ql.block.common.config;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

@@ -16,6 +16,7 @@ public class Identify{
   private ECPrivateKey privateKey;
   private ECPublicKey publicKey;
 
+
   public Identify() {
   }
 
@@ -27,6 +28,13 @@ public class Identify{
   public Identify(ECPrivateKey privateKey, ECPublicKey publicKey) {
     this.privateKey = privateKey;
     this.publicKey = publicKey;
+  }
+
+  public boolean isConnected(){
+    if (privateKey!=null && publicKey!=null){
+      return true;
+    }
+    return false;
   }
 
   public ECPrivateKey getPrivateKey() {

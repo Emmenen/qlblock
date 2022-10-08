@@ -1,12 +1,10 @@
 package org.ql.block.ledger.model.blockchain;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
 import org.ql.block.ledger.db.Database;
-import org.ql.block.ledger.exceptions.AddBlockError;
 import org.ql.block.ledger.exceptions.BlockOrderError;
 import org.ql.block.ledger.exceptions.DataBaseIsNotExistError;
 import org.ql.block.ledger.exceptions.GetBlockError;
@@ -14,15 +12,7 @@ import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.model.block.MasterBlock;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.ledger.util.MathUtils;
-import org.ql.block.ledger.util.ObjectUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -35,7 +25,6 @@ import static org.ql.block.ledger.util.ObjectUtil.byteArrayToObject;
  * email: 592918942@qq.com
  */
 @Slf4j
-@EnableTransactionManagement
 public abstract class BlockChain {
 
 
@@ -161,6 +150,16 @@ public abstract class BlockChain {
     log.info("当前区块高度："+getHeight());
   }
 
+  /**
+   * 批量更新账本
+   * 如何保证清单中的区块是按顺序添加到账本中的？
+   * 账本清单严格的讲应该是一个顺序列表，从区块高度较低->区块高度较高的区块；
+   * 有低到高取出区块nextNode，每次添加区块之前验证节点中存放的lastHash与 nextNode.previousHash是否相等
+   * 若不相等，说明区块清单被篡改，拒绝添加该出错区块之后的所有区块
+   * 如何保证每个区块都是正确的？https://www.jianshu.com/p/64dfd24599e5
+   * @param c 账本清单
+   * @return
+   */
   public boolean addBlockAllStrict(Collection<Block> c)  {
     // 保证最后添加到账本中的区块是最新的就可以；
     Iterator<Block> iterator = c.iterator();

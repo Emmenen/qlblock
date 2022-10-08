@@ -1,5 +1,6 @@
 package org.ql.block.ledger.consensus;
 
+import org.ql.block.common.annotation.RequireWallet;
 import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.util.CryptoUtils;
 import org.ql.block.ledger.wallet.Wallet;
@@ -20,14 +21,11 @@ public class PowOfWork {
   @Autowired
   public Wallet wallet;
   //目标，求的Hash时与target进行比较
-
   public static BigInteger target = BigInteger.valueOf(1).shiftLeft(256-(1*6));
 
   public PowOfWork() {
     //todo通过类名实例化
   }
-
-
 
   public String prepareData(Block block){
     return block.getPreviousHash() + Integer.toHexString(block.hashCode()) + target.toString(16) + Integer.toHexString(block.nonce);
@@ -47,6 +45,7 @@ public class PowOfWork {
      */
     return this.prepareData(block);
   }
+  @RequireWallet
   public PowOfWorkForm run(Block block){
     int nonce = 0;
     PowOfWorkForm powOfWorkForm = new PowOfWorkForm();

@@ -13,6 +13,10 @@
     <artifactId>ql-block-ledger</artifactId>
     <dependencies>
         <dependency>
+            <groupId>org.ql.block</groupId>
+            <artifactId>ql-block-common</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
@@ -50,21 +54,22 @@
 <!--            <scope>system</scope>-->
 <!--            <systemPath>${basedir}/src/main/resources/bitcoin-s-core_2.13-1.9.2.jar</systemPath>-->
 <!--        </dependency>-->
-        <!-- https://mvnrepository.com/artifact/org.scala-lang/scala-library -->
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.scodec/scodec-bits -->
-        <dependency>
-            <groupId>org.scodec</groupId>
-            <artifactId>scodec-bits_3</artifactId>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.bitcoins/bitcoin-s-core -->
-        <dependency>
-            <groupId>org.bitcoins</groupId>
-            <artifactId>bitcoin-s-core_2.12</artifactId>
-        </dependency>
+
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.scala-lang/scala-library &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.scala-lang</groupId>-->
+<!--            <artifactId>scala-library</artifactId>-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.scodec/scodec-bits &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.scodec</groupId>-->
+<!--            <artifactId>scodec-bits_3</artifactId>-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.bitcoins/bitcoin-s-core &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.bitcoins</groupId>-->
+<!--            <artifactId>bitcoin-s-core_2.12</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
