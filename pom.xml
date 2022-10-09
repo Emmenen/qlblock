@@ -13,6 +13,7 @@
         <module>ql-block-browser</module>
         <module>ql-block-section</module>
         <module>ql-block-common</module>
+        <module>ql-block-beans</module>
     </modules>
 
     <properties>

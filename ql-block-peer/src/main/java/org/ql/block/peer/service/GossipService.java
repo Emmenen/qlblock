@@ -1,5 +1,7 @@
 package org.ql.block.peer.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.ql.block.peer.communication.message.messageModel.GetBLock;
 import org.ql.block.peer.communication.message.messageModel.Message;
 import org.ql.block.peer.communication.message.MessageType;
 import org.ql.block.peer.communication.message.MessageVO;
@@ -19,6 +21,7 @@ import java.util.*;
  * email: 592918942@qq.com
  */
 @Service
+@Slf4j
 public class GossipService {
 
   @Autowired
@@ -75,5 +78,15 @@ public class GossipService {
     };
     ThreadFactory.cachedThreadPool.execute(runnable);
   }
+
+  /**
+   * 广播GET_BLOCKS消息
+   */
+  public void gossipGetBlocks(){
+    log.info("gossip spread:GET_BLOCKS");
+    GetBLock getBLock = new GetBLock(peerContext.getBestHeight());
+    gossipSpread(getBLock,MessageType.GET_BLOCKS);
+  }
+
 
 }

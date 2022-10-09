@@ -1,6 +1,7 @@
 package org.ql.block.ledger.model.blockchain;
 
 import org.jetbrains.annotations.NotNull;
+import org.ql.block.common.annotation.AddBlock;
 import org.ql.block.ledger.exceptions.GetBlockError;
 import org.ql.block.ledger.model.block.TaskBlock;
 import org.ql.block.ledger.model.blockdata.BlockData;
@@ -39,6 +40,7 @@ public class TaskBlockChain extends BlockChain{
   }
 
   @Override
+  @AddBlock
   public void addBlock(@NotNull Block taskBlock) {
     if (taskBlock instanceof TaskBlock){
       super.addBlock(taskBlock);

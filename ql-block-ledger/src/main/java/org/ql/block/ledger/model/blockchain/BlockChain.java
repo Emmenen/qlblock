@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
+import org.ql.block.common.annotation.AddBlock;
 import org.ql.block.ledger.db.Database;
 import org.ql.block.ledger.exceptions.BlockOrderError;
 import org.ql.block.ledger.exceptions.DataBaseIsNotExistError;
@@ -135,6 +136,7 @@ public abstract class BlockChain {
     return new String(getData("l"));
   }
 
+  @AddBlock
   public void addBlock(@NotNull Block block) {
     this.tip = block.currentHash;
     log.info("当前区块高度："+deep);

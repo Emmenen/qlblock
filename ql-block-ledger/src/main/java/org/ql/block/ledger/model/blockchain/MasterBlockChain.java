@@ -3,6 +3,7 @@ package org.ql.block.ledger.model.blockchain;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
+import org.ql.block.common.annotation.AddBlock;
 import org.ql.block.ledger.exceptions.GetBlockError;
 import org.ql.block.ledger.model.block.MasterBlock;
 import org.ql.block.ledger.model.blockdata.BlockData;
@@ -46,6 +47,7 @@ public class MasterBlockChain extends BlockChain{
   }
 
   @Override
+  @AddBlock
   public void addBlock(@NotNull Block masterBlock) {
     if (masterBlock instanceof MasterBlock){
       super.addBlock(masterBlock);

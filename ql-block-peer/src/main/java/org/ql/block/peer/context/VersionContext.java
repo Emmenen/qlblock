@@ -23,7 +23,7 @@ class VersionContext {
   private String nVersion;
 
   //当前时间
-  private Date nTime;
+//  private Date nTime;
 
   @Autowired
   private AddrYou addrYou;
@@ -54,7 +54,7 @@ class VersionContext {
 
     if (getBestHeight() != versionContext.getBestHeight()) return false;
     if (!nVersion.equals(versionContext.nVersion)) return false;
-    if (!nTime.equals(versionContext.nTime)) return false;
+//    if (!nTime.equals(versionContext.nTime)) return false;
     if (!getAddrYou().equals(versionContext.getAddrYou())) return false;
     return getAddrMe().equals(versionContext.getAddrMe());
   }
@@ -62,7 +62,7 @@ class VersionContext {
   @Override
   public int hashCode() {
     int result = nVersion.hashCode();
-    result = 31 * result + nTime.hashCode();
+//    result = 31 * result + nTime.hashCode();
     result = 31 * result + getAddrYou().hashCode();
     result = 31 * result + getAddrMe().hashCode();
     result = 31 * result + getBestHeight();

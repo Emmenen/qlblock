@@ -84,11 +84,13 @@ public class ClientThreadPool {
                             log.info("请求区块信息来自:{}",client);
                             GetBLock getBLock = (GetBLock) message;
                             getBlockMsg(client,getBLock.getBestHeight());
+                            break;
                         case BLOCKS_LIST:
                             log.info("BLOCKS_LIST");
                             Inv inv = (Inv) message;
                             log.info("收到{}的区块清单,{}个区块",client,inv.getBlockList().size());
                             invMsg(inv);
+                            break;
                     }
                 }
             } catch (IOException e) {
