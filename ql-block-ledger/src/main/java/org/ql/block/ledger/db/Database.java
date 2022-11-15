@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * Author: @Qi Long
  * email: 592918942@qq.com
  */
-public class Database implements Serializable {
+public  class Database implements Serializable {
   //用来存放数据库中有哪些bucket的数据库的名称;
   public static final String DB_INIT = "Initialized";
 
@@ -25,7 +25,7 @@ public class Database implements Serializable {
   private HashMap<String,DB> bucketMap = new HashMap<>();
 
   private static final DBFactory dbFactory;
-  private static final Options options;
+  private static  final Options options;
 
   static {
     dbFactory = new Iq80DBFactory();
@@ -45,6 +45,8 @@ public class Database implements Serializable {
       homeDB = dbFactory.open(new File(this.name), options);
     } catch (IOException e) {
       e.printStackTrace();
+    } catch (Error error){
+      error.printStackTrace();
     }
     this.init();
   }

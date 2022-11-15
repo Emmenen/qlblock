@@ -1,5 +1,7 @@
 package org.ql.block.ledger.consensus;
 
+import java.math.BigInteger;
+
 /**
  * Created at 2022/7/3 17:32
  * Author: @Qi Long
@@ -7,6 +9,6 @@ package org.ql.block.ledger.consensus;
  */
 public class PowOfWorkForm {
   public String hash;
-  public int nonce;
+  public BigInteger nonce;
   public String miner;
 }

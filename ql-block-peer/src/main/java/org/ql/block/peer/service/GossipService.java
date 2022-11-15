@@ -1,10 +1,10 @@
 package org.ql.block.peer.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.ql.block.peer.communication.message.messageModel.GetBLock;
-import org.ql.block.peer.communication.message.messageModel.Message;
-import org.ql.block.peer.communication.message.MessageType;
-import org.ql.block.peer.communication.message.MessageVO;
+import org.ql.block.peer.communication.message.peer.pojo.GetBLock;
+import org.ql.block.peer.communication.message.peer.pojo.PeerMessage;
+import org.ql.block.peer.communication.message.peer.enums.MessageType;
+import org.ql.block.peer.communication.message.peer.MessageVO;
 import org.ql.block.peer.context.PeerContext;
 import org.ql.block.peer.model.MyOutputStream;
 import org.ql.block.peer.model.MySocket;
@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
 
 /**
  * Created at 2022/10/6 16:27
@@ -27,14 +29,20 @@ public class GossipService {
   @Autowired
   private PeerContext peerContext;
 
-  public void gossipSpread(Message message, MessageType messageType) {
-    Runnable runnable = () -> {
+  /**
+   * 调用此方法会将Message传播到已经连接的节点。
+   * @param message 传播的内容
+   * @param messageType 内容的类型
+   * @return 返回FutureTask供调用这获取传播消息的反馈；
+   */
+  public FutureTask<String> gossipSpread(PeerMessage message, MessageType messageType) {
+    Callable callable = () -> {
+      int count = 0;
       try {
         Set<Integer> spreadIndex = new HashSet<Integer>();
         List<MySocket> socketList = peerContext.getSocketList();
         // 获取当前节点已经连接到的节点
         int connectedCount = socketList.size();
-        int count = 0;
         //暂且设置为每个节点要把消息告诉自己连接的所有的节点
         while (count<connectedCount){
           Random random = new Random();
@@ -45,7 +53,8 @@ public class GossipService {
             //如果节点不够3个
             if (connectedCount==0){
               //如果没有连接到任何节点，不传播信息
-              return;
+              log.info("none of peer connected!");
+              return "none of peer connected!";
             }else {
               // 在不足3个节点是，有多少放多少个节点的索引
               for (int i = 0; i < connectedCount; i++) {
@@ -75,8 +84,13 @@ public class GossipService {
       } catch (IOException e) {
         e.printStackTrace();
       }
+      log.info(messageType+"spread '"+count+"' peer success！");
+      return messageType+"spread '"+count+"' peer success！";
     };
-    ThreadFactory.cachedThreadPool.execute(runnable);
+    FutureTask<String> futureTask = new FutureTask<String>(callable);
+    //todo 消息发送不成功。
+    ThreadFactory.cachedThreadPool.execute(futureTask);
+    return futureTask;
   }
 
   /**

@@ -1,13 +1,18 @@
 package org.ql.block.peer.context;
 
+import org.ql.block.ledger.model.blockdata.BlockData;
+import org.ql.block.ledger.model.blockdata.Transaction;
+import org.ql.block.peer.communication.message.peer.pojo.PeerMessage;
+import org.ql.block.peer.communication.message.thread.ThreadMessageVO;
+import org.ql.block.peer.communication.message.thread.pojo.ThreadMessage;
 import org.ql.block.peer.model.MySocket;
 import org.ql.block.peer.model.Peer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created with IntelliJ IDEA at 2022/5/17 16:22
@@ -20,6 +25,23 @@ public class PeerContext extends VersionContext {
 
     @Autowired
     private Peer addrMe;
+
+    public static final int threshold = 10;
+
+    private TreeSet<Transaction> transactionPool = new TreeSet<>(new Comparator<Transaction>() {
+        @Override
+        public int compare(Transaction o1, Transaction o2) {
+            return o1.reward - o2.reward;
+        }
+    });
+
+    //创建阻塞队列：在取交易的时候如果为空，则等待
+    private BlockingQueue<Transaction> blockingTransactionPool = new LinkedBlockingQueue<>();
+
+    //创建阻塞队列：在取交易的时候如果为空，则等待
+    public BlockingQueue<ThreadMessageVO> blockingMsgQueue = new LinkedBlockingQueue<>();
+
+    private HashSet<String> testPool = new HashSet<>();
 
     private List<Peer> connectList = new ArrayList<>();
 
@@ -58,10 +80,14 @@ public class PeerContext extends VersionContext {
        return this.getAddrYou().remove(peer);
     }
     public synchronized boolean addOnePeer(MySocket socket){
-       return addToAddrYou(socket.getPeer()) && addSocketToList(socket);
+        boolean b1 = addToAddrYou(socket.getPeer());
+        boolean b2 = addSocketToList(socket);
+        return b1 && b2;
     }
     public synchronized boolean removeOnePeer(MySocket socket){
-       return removeAddrYou(socket.getPeer()) && removeSocketToList(socket);
+        boolean b1 = removeAddrYou(socket.getPeer());
+        boolean b2 = removeSocketToList(socket);
+        return b1 && b2;
     }
 
     public synchronized boolean addToAddrYou(HashSet<Peer> peerList){
@@ -82,4 +108,32 @@ public class PeerContext extends VersionContext {
         }
         return remove;
     }
+
+    public HashSet<String> getTestPool() {
+        return testPool;
+    }
+
+    public TreeSet<Transaction> getTransactionPool() {
+        return transactionPool;
+    }
+
+    public synchronized void addTransaction(Transaction transaction){
+        getTransactionPool().add(transaction);
+    }
+
+    public synchronized void addData(String str){
+        getTestPool().add(str);
+        /**
+         * todo 触发区块打包
+         */
+        if (getTestPool().size()>=threshold){
+            Iterator<String> iterator = getTestPool().iterator();
+            String data = "";
+            while (iterator.hasNext()){
+                data += iterator.next();
+            }
+            new BlockData(data);
+        }
+    }
+
 }

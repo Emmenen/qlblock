@@ -1,10 +1,9 @@
-package org.ql.block.peer.communication.message.messageModel;
+package org.ql.block.peer.communication.message.peer.pojo;
 
 import lombok.Data;
 import org.ql.block.ledger.model.block.Block;
-import org.ql.block.peer.model.Peer;
 
-import java.util.HashSet;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,11 +13,15 @@ import java.util.List;
  * 区块清单
  */
 @Data
-public class Inv extends Message {
+public class Inv implements PeerMessage, Serializable {
   private List<Block> blockList;
   public Inv(List<Block> blockList) {
     this.blockList = blockList;
   }
 
 
+  @Override
+  public long UID() {
+    return hashCode()+System.currentTimeMillis();
+  }
 }

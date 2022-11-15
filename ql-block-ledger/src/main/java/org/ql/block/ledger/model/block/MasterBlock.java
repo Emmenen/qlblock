@@ -1,5 +1,6 @@
 package org.ql.block.ledger.model.block;
 
+import org.ql.block.ledger.model.blockchain.MasterBlockChain;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.ledger.model.blockdata.Transaction;
 
@@ -23,21 +24,19 @@ public class MasterBlock extends Block {
 
 
   public MasterBlock(String previousHash, BlockData data) {
-
     super(previousHash, data);
-    if (data.getTransactions()==null){
-      return;
-    }
+    /**
+     * hash计算完成之后，将奖励交易打包进区块
+     */
     Transaction[] transactions = data.getTransactions();
+    if (transactions == null){
+      transactions = new Transaction[0];
+    }
     Transaction[] transactionsReward = new Transaction[transactions.length + 1];
     for (int i = 0; i < transactionsReward.length - 1; i++) {
       transactionsReward[i+1] = transactions[i];
     }
-
-    /**
-     * 创建奖励给矿工的coinBase奖励
-     */
-    transactionsReward[0] = new Transaction(this.miner);
+    transactionsReward[0] = new Transaction(miner,50);
     BlockData blockData = new BlockData(transactionsReward);
     this.data = blockData;
   }

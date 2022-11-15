@@ -1,6 +1,7 @@
 package org.ql.block.ledger.model.blockdata;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Created at 2022/7/13 23:49
@@ -25,4 +26,23 @@ public class TXInput implements Serializable {
     }
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof TXInput)) return false;
+
+    TXInput txInput = (TXInput) o;
+
+    if (vOutIndex != txInput.vOutIndex) return false;
+    if (!Objects.equals(Txid, txInput.Txid)) return false;
+    return Objects.equals(script, txInput.script);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Txid != null ? Txid.hashCode() : 0;
+    result = 31 * result + vOutIndex;
+    result = 31 * result + (script != null ? script.hashCode() : 0);
+    return result;
+  }
 }

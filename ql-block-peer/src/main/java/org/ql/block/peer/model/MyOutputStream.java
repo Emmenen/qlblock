@@ -1,7 +1,7 @@
 package org.ql.block.peer.model;
 
 import org.ql.block.ledger.util.ObjectUtil;
-import org.ql.block.peer.communication.message.MessageVO;
+import org.ql.block.peer.communication.message.peer.MessageVO;
 import org.ql.block.peer.config.MsgConfig;
 
 import java.io.IOException;

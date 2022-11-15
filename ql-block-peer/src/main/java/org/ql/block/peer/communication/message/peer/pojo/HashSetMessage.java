@@ -1,9 +1,9 @@
-package org.ql.block.peer.communication.message.messageModel;
+package org.ql.block.peer.communication.message.peer.pojo;
 
 import lombok.Data;
-import org.ql.block.peer.communication.message.messageModel.Message;
 import org.ql.block.peer.model.Peer;
 
+import java.io.Serializable;
 import java.util.HashSet;
 
 /**
@@ -12,10 +12,15 @@ import java.util.HashSet;
  * email: 592918942@qq.com
  */
 @Data
-public class HashSetMessage extends Message {
+public class HashSetMessage implements PeerMessage, Serializable {
   private HashSet<Peer> addrYou;
 
   public HashSetMessage(HashSet<Peer> addrYou) {
     this.addrYou = addrYou;
+  }
+
+  @Override
+  public long UID() {
+    return addrYou.hashCode()+System.currentTimeMillis();
   }
 }

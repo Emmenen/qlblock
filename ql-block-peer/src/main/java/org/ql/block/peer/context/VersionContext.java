@@ -2,7 +2,7 @@ package org.ql.block.peer.context;
 
 import lombok.Data;
 import org.ql.block.ledger.service.MasterChainService;
-import org.ql.block.peer.communication.message.messageModel.Version;
+import org.ql.block.peer.communication.message.peer.pojo.Version;
 import org.ql.block.peer.model.Peer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

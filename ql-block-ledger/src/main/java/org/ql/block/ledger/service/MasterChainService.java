@@ -1,6 +1,5 @@
 package org.ql.block.ledger.service;
 
-import org.ql.block.ledger.exceptions.BlockOrderError;
 import org.ql.block.ledger.exceptions.GetBlockError;
 import org.ql.block.ledger.model.block.Block;
 
@@ -29,4 +28,6 @@ public interface MasterChainService {
   public void addBlock(Block block);
 
   public boolean addBlockAll(Collection<Block> c);
+
+
 }

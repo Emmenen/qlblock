@@ -3,6 +3,7 @@ package org.ql.block.ledger.model.blockchain;
 import org.jetbrains.annotations.NotNull;
 import org.ql.block.common.annotation.AddBlock;
 import org.ql.block.ledger.exceptions.GetBlockError;
+import org.ql.block.ledger.model.block.MasterBlock;
 import org.ql.block.ledger.model.block.TaskBlock;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.ledger.db.Database;
@@ -32,6 +33,13 @@ public class TaskBlockChain extends BlockChain{
     return new TaskBlock("genesis", new BlockData("genesis"));
   }
 
+  @Override
+  public TaskBlock addBlock(BlockData data) {
+    TaskBlock block;
+    block = new TaskBlock(tip, data);
+    addBlock(block);
+    return block;
+  }
 
 
   @Override

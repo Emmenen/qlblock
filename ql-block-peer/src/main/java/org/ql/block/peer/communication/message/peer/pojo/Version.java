@@ -1,9 +1,9 @@
-package org.ql.block.peer.communication.message.messageModel;
+package org.ql.block.peer.communication.message.peer.pojo;
 
-import org.ql.block.peer.communication.message.messageModel.Message;
-import org.ql.block.peer.communication.message.MessageType;
+import org.ql.block.peer.communication.message.peer.enums.MessageType;
 import org.ql.block.peer.model.Peer;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -14,7 +14,7 @@ import java.util.HashSet;
  * 用来与网络中其他节点交流的Version对象，
  * 对应的{@link MessageType#VERSION}
  */
-public class Version extends Message {
+public class Version implements PeerMessage, Serializable {
 
   private String nVersion;
   //当前时间
@@ -62,5 +62,10 @@ public class Version extends Message {
             ", addrMe=" + addrMe +
             ", BestHeight=" + BestHeight +
             '}';
+  }
+
+  @Override
+  public long UID() {
+    return hashCode()+System.currentTimeMillis();
   }
 }

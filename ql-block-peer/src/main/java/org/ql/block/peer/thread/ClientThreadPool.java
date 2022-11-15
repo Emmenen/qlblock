@@ -1,18 +1,22 @@
 package org.ql.block.peer.thread;
 
 import lombok.extern.slf4j.Slf4j;
-import org.ql.block.ledger.exceptions.BlockOrderError;
 import org.ql.block.ledger.exceptions.GetBlockError;
 import org.ql.block.ledger.model.block.Block;
+import org.ql.block.ledger.model.blockchain.BlockChain;
+import org.ql.block.ledger.model.blockdata.Transaction;
 import org.ql.block.ledger.service.MasterChainService;
 import org.ql.block.ledger.util.ObjectUtil;
-import org.ql.block.peer.communication.message.messageModel.*;
-import org.ql.block.peer.communication.message.MessageVO;
+import org.ql.block.peer.communication.message.peer.pojo.*;
+import org.ql.block.peer.communication.message.peer.MessageVO;
+import org.ql.block.peer.communication.message.thread.ThreadMessageVO;
+import org.ql.block.peer.communication.message.thread.enums.ThreadMessageType;
+import org.ql.block.peer.communication.message.thread.pojo.MintedBlock;
 import org.ql.block.peer.model.MyOutputStream;
 import org.ql.block.peer.model.MySocket;
 import org.ql.block.peer.model.Peer;
 import org.ql.block.peer.context.PeerContext;
-import org.ql.block.peer.communication.message.MessageType;
+import org.ql.block.peer.communication.message.peer.enums.MessageType;
 import org.ql.block.peer.service.GossipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +44,9 @@ public class ClientThreadPool {
     @Autowired
     private MasterChainService masterChainService;
 
+    @Autowired
+    private BlockChain blockChain;
+
     public void startAClient(Socket socket) throws IOException {
         this.startAClient(new MySocket(socket));
     }
@@ -52,7 +59,7 @@ public class ClientThreadPool {
                     InputStream in = client.getInputStream();
                     MessageVO messageVO = (MessageVO) ObjectUtil.inputSteamToObject(in);
                     MessageType header = messageVO.getMessageType();
-                    Message message = messageVO.getMessage();
+                    Object message = messageVO.getMessage();
                     switch (header) {
                         case VERSION:
                             Version version = (Version) message;
@@ -91,6 +98,36 @@ public class ClientThreadPool {
                             log.info("收到{}的区块清单,{}个区块",client,inv.getBlockList().size());
                             invMsg(inv);
                             break;
+                        case GOSSIP_TRANSACTION:
+                            log.info("GOSSIP_TRANSACTION");
+                            Transaction transaction = (Transaction) message;
+                            TransactionMessage transactionMessage = new TransactionMessage(transaction);
+                            break;
+                        case SET_BLOCK:
+                            log.info("SET_BLOCK");
+                            SetBlock setBlock = (SetBlock) message;
+                            Block block = setBlock.getBlock();
+
+                            //todo 区块验证
+                            if (block.validate()) {
+                                if (block.previousHash.equals(masterChainService.getLastHash())){
+                                    //区块验证通过之后，
+                                    //1. 中断当前正在工作的挖矿工作，开启下一轮竞争
+                                    //2. 将新加入的区块中的交易从本地交易池中去除
+                                    //问题：
+                                    //当有多个节点挖出块，后挖出的块先到达了该节点，如何确定将最新挖出的块存放到链上。
+                                    log.info("收到新的合法区块");
+                                    peerContext.blockingMsgQueue.put(new ThreadMessageVO(new MintedBlock(block),ThreadMessageType.MINTED_BLOCK));
+                                    masterChainService.addBlock(block);
+                                    log.info("将新块加入到链上");
+                                }
+                            }
+                            break;
+                        case GOSSIP_TEXTDATA:
+                            String textData = (String) message;
+                            log.info("GOSSIP_TEXTDATA:{}",textData);
+                            peerContext.addData(textData);
+                            break;
                     }
                 }
             } catch (IOException e) {
@@ -100,6 +137,8 @@ public class ClientThreadPool {
                         peerContext.removeOnePeer(client);
                     }
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         };
         ThreadFactory.cachedThreadPool.execute(runnable);
@@ -125,9 +164,7 @@ public class ClientThreadPool {
         mout.write(new MessageVO(MessageType.NEW_ADDR_YOU, new HashSetMessage(contextAddrYou)));
         mout.flush();
         //3. 将新节点的信息写入网络节点列表
-        peerContext.addToAddrYou(version.getAddrMe());
-        peerContext.addSocketToList(socket);
-
+        peerContext.addOnePeer(socket);
         //4. 交换区块清单
         int bestHeight = version.getBestHeight();
         getBlockMsg(socket,bestHeight);

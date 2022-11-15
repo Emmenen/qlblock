@@ -2,6 +2,7 @@ package org.ql.block.peer.model;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.ql.block.peer.communication.message.peer.pojo.PeerMessage;
 import org.springframework.beans.BeanUtils;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.io.OutputStream;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.TreeMap;
 
 /**
  * Created with IntelliJ IDEA at 2022/5/17 16:33
@@ -35,7 +37,6 @@ public class MySocket extends Socket{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof MySocket)) return false;
-
         MySocket mySocket = (MySocket) o;
 
         return getPeer().equals(mySocket.getPeer());
@@ -73,7 +74,7 @@ public class MySocket extends Socket{
         this.peer = new Peer(hostName,port);
     }
 
-    private HashMap<Object,Boolean> messageMap = new HashMap<>();
+    private HashMap<Long,Boolean> messageMap = new HashMap<>();
 
     public MyOutputStream getMyOutputStream() throws IOException {
         OutputStream outputStream;
@@ -100,8 +101,8 @@ public class MySocket extends Socket{
         return socket.getInputStream();
     }
 
-    public void putMessage(Object msg){
-        this.messageMap.put(msg,true);
+    public void putMessage(PeerMessage msg){
+        this.messageMap.put(msg.UID(),true);
     }
 
     /**
@@ -109,8 +110,8 @@ public class MySocket extends Socket{
      * @param msg
      * @return
      */
-    public Boolean getMessageFlag(Object msg){
-        Boolean aBoolean = this.messageMap.get(msg);
+    public Boolean getMessageFlag(PeerMessage msg){
+        Boolean aBoolean = this.messageMap.get(msg.UID());
         if (aBoolean==null){
             aBoolean = false;
         }else {

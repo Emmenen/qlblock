@@ -1,7 +1,8 @@
-package org.ql.block.peer.communication.message;
+package org.ql.block.peer.communication.message.peer;
 
 import lombok.Data;
-import org.ql.block.peer.communication.message.messageModel.Message;
+import org.ql.block.peer.communication.message.peer.enums.MessageType;
+import org.ql.block.peer.communication.message.peer.pojo.PeerMessage;
 
 import java.io.Serializable;
 
@@ -13,11 +14,11 @@ import java.io.Serializable;
 @Data
 public class MessageVO implements Serializable {
   private MessageType messageType;
-  private Message message;
-
-  public MessageVO(MessageType messageType, Message message) {
+  private PeerMessage message;
+  public MessageVO(MessageType messageType, PeerMessage message) {
     this.messageType = messageType;
     this.message = message;
   }
+
 
 }

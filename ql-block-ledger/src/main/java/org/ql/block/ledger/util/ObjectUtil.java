@@ -1,5 +1,7 @@
 package org.ql.block.ledger.util;
 
+import com.alibaba.fastjson.JSON;
+
 import java.io.*;
 
 /**
@@ -31,13 +33,24 @@ public class ObjectUtil<T> {
     }
     return o;
   }
+  public static  <T> T byteArrayToObject(byte[] object, Class<T> clazz) {
+    return (T)byteArrayToObject(object);
+  }
+
+
+  public static byte[] ObjectToJsonByteArray(Object object){
+    String s = JSON.toJSONString(object);
+    return s.getBytes();
+  }
 
   public static byte[] ObjectToByteArray(Object object) {
-    byte[] bytes;
+    byte[] bytes = new byte[0];
+    ObjectOutputStream oo;
+    ByteArrayOutputStream bo;
     try {
       //字节数组输出流在内存中创建一个字节数组缓冲区，所有发送到输出流的数据保存在该字节数组缓冲区中。
-      ByteArrayOutputStream bo = new ByteArrayOutputStream();
-      ObjectOutputStream oo = new ObjectOutputStream(bo);
+      bo = new ByteArrayOutputStream();
+      oo = new ObjectOutputStream(bo);
       oo.writeObject(object);
       bytes = bo.toByteArray();
       bo.close();
@@ -46,6 +59,6 @@ public class ObjectUtil<T> {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return null;
+      return bytes;
   }
 }

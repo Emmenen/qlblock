@@ -1,6 +1,6 @@
 package org.ql.block.peer.utils;
 
-import org.ql.block.peer.communication.message.MessageType;
+import org.ql.block.peer.communication.message.peer.enums.MessageType;
 import org.ql.block.peer.config.MsgConfig;
 
 /**

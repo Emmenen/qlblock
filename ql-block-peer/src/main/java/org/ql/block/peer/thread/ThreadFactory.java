@@ -1,9 +1,6 @@
 package org.ql.block.peer.thread;
 
-import org.springframework.stereotype.Service;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * Created at 2022/10/6 12:16
@@ -11,5 +8,5 @@ import java.util.concurrent.Executors;
  * email: 592918942@qq.com
  */
 public class ThreadFactory {
-  public static ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+  public static ThreadPoolExecutor cachedThreadPool = new ThreadPoolExecutor(13,30,60L,TimeUnit.SECONDS,new SynchronousQueue<Runnable>());
 }

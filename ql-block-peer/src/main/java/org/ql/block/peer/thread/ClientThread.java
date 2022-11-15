@@ -1,10 +1,8 @@
 package org.ql.block.peer.thread;
 
 import lombok.extern.slf4j.Slf4j;
-import org.ql.block.ledger.util.ObjectUtil;
-import org.ql.block.peer.communication.message.MessageType;
-import org.ql.block.peer.communication.message.MessageVO;
-import org.ql.block.peer.context.AddrYou;
+import org.ql.block.peer.communication.message.peer.enums.MessageType;
+import org.ql.block.peer.communication.message.peer.MessageVO;
 import org.ql.block.peer.model.MyOutputStream;
 import org.ql.block.peer.model.MySocket;
 import org.ql.block.peer.model.Peer;
@@ -57,7 +55,7 @@ public class ClientThread implements Runnable{
                         clientThreadPool.startAClient(client);
                         MyOutputStream myOutputStream = client.getMyOutputStream();
                         myOutputStream.write(new MessageVO(MessageType.VERSION,peerContext.getVersion()));
-                        connectList.add(peer);
+                        peerContext.addOnePeer(client);
                         break;
                     } catch (IOException e) {
                         log.info("Failed to connect node {} for the {}th time",peer,i+1);

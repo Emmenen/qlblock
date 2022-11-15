@@ -12,10 +12,15 @@ import org.ql.block.ledger.exceptions.GetBlockError;
 import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.model.block.MasterBlock;
 import org.ql.block.ledger.model.blockdata.BlockData;
+import org.ql.block.ledger.model.blockdata.TXOutput;
+import org.ql.block.ledger.model.blockdata.Transaction;
+import org.ql.block.ledger.model.utxo.UTXO;
+import org.ql.block.ledger.model.utxo.UnSpentOutput;
 import org.ql.block.ledger.util.MathUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.ql.block.ledger.util.ObjectUtil.ObjectToByteArray;
 import static org.ql.block.ledger.util.ObjectUtil.byteArrayToObject;
@@ -30,6 +35,7 @@ public abstract class BlockChain {
 
 
   protected static final String BLOCK_BUCKET = "blockBucket";
+  protected static final String CHAIN_STATE = "chainState";
   protected DB bucketBucketDb;
 
   /**
@@ -40,6 +46,7 @@ public abstract class BlockChain {
    * 区块链的最上层区块的hash
    */
   public String tip;
+
   /**
    * 区块深度
    */
@@ -80,11 +87,7 @@ public abstract class BlockChain {
   public abstract Block newGenesisBlock();
 
 
-  public void addBlock(BlockData data){
-    MasterBlock block;
-    block = new MasterBlock(tip, data);
-    addBlock(block);
-  }
+  public abstract Block addBlock(BlockData data);
 
   /**
    * 区块的高度的下标是从1开始的;
@@ -145,6 +148,7 @@ public abstract class BlockChain {
       bucket.put(Iq80DBFactory.bytes(block.currentHash),ObjectToByteArray(block));
       log.info("添加新的区块到链上(perHash: {})",block.previousHash);
       log.info("添加新的区块到链上(currentHash: {})",block.currentHash);
+      log.info("矿工(minter: {})",block.miner);
       bucket.put(Iq80DBFactory.bytes("l"),Iq80DBFactory.bytes(tip));
       bucket.put(Iq80DBFactory.bytes("d"),MathUtils.intToByteArray(deep));
     });
@@ -190,4 +194,47 @@ public abstract class BlockChain {
     return this.bucketBucketDb;
   }
 
+  public ConcurrentHashMap<String, ArrayList<UnSpentOutput>> FindUTXO(){
+    ConcurrentHashMap<String, ArrayList<Integer>> spentTXOs = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, ArrayList<UnSpentOutput>> UTXO = new ConcurrentHashMap<>();
+    BLockChainIterator iterator = Iterator();
+    while (iterator.hashNext()){
+      Block block = iterator.next();
+      Transaction[] transactions = block.data.getTransactions();
+      for (Transaction transaction : transactions) {
+        boolean isSpend = false;
+        for (int i = 0; i < transaction.vOut.length; i++) {
+          //判断交易是否被引用过
+          if (spentTXOs.get(transaction.id) != null) {
+            //被引用
+            //判断引用的交易中的输出是否是当前遍历的交易输出
+            for (int index : spentTXOs.get(transaction.id)) {
+              if (i==index){
+                isSpend = true;
+              }
+            }
+          }
+          if (!isSpend){
+            ArrayList<UnSpentOutput> outs = UTXO.getOrDefault(transaction.id,new ArrayList<>());
+            outs.add(new UnSpentOutput(transaction.vOut[i],i,transaction.id));
+            UTXO.put(transaction.id,outs);
+          }
+        }
+        if (!transaction.isBaseCoin()){
+          for (int i = 0; i < transaction.vIn.length; i++) {
+            ArrayList<Integer> orDefault = spentTXOs.getOrDefault(transaction.id, new ArrayList<>());
+            orDefault.add(i);
+            spentTXOs.put(transaction.id,orDefault);
+          }
+        }
+      }
+    }
+    return UTXO;
+  }
+
+
+  public BLockChainIterator Iterator(){
+    BLockChainIterator bLockChainIterator = new BLockChainIterator(tip, getBlockDB());
+    return bLockChainIterator;
+  }
 }
