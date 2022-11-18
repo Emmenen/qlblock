@@ -29,7 +29,7 @@ public class PowOfWork {
   private String isMintProcess;
 
   //目标，求的Hash时与target进行比较
-  public static BigInteger target = BigInteger.valueOf(1).shiftLeft(256-(3*6));
+  public static BigInteger target = BigInteger.valueOf(1).shiftLeft(256-(4*6));
 
   public PowOfWork() {
     //todo通过类名实例化
@@ -107,18 +107,35 @@ public class PowOfWork {
   }
 
   /**
+   * todo 为什么data一样但摘要却不一样
    * 区块的验证，主要验证区块的hash是否满足条件，并不验证交易是否与自己节点选择一致；
    * @param block
    * @return
    */
   public boolean validate(Block block){
-    String data = this.prepareData(block);
-    byte[] digest = CryptoUtils.sha256.digest(data.getBytes());
-    BigInteger bigInteger = new BigInteger(digest);
+    String data = this.prepareData(block).trim();
+    String sha256Hex = CryptoUtils.encrypt_sha256_hex(data);
+    System.out.println("sha256Hex"+sha256Hex);
+    BigInteger bigInteger = new BigInteger(sha256Hex, 16);
     if (bigInteger.abs().compareTo(target) == -1 && bigInteger.compareTo(BigInteger.ZERO) != -1){
       return true;
     }else {
       return false;
     }
+  }
+
+  public static void main(String[] args) {
+    String data = "000000A6FFE60F75B9493DF9C9F39EFCFF7F2CCE1F305BB34D4C615E1584156B20100000000000000000000000000000000000000000000000000000000002793784";
+    byte[] digest = CryptoUtils.sha256.digest(data.getBytes());
+    String sha256Hex = CryptoUtils.encrypt_sha256_hex(data);
+    System.out.println(sha256Hex);
+    BigInteger bigInteger = new BigInteger(sha256Hex, 16);
+    if (bigInteger.abs().compareTo(target) == -1 && bigInteger.compareTo(BigInteger.ZERO) != -1){
+      System.out.println(true);
+    }else {
+      System.out.println(false);
+    }
+    System.out.println(new BigInteger(digest));
+    System.out.println(new BigInteger(digest));
   }
 }

@@ -4,6 +4,7 @@ import org.ql.block.ledger.consensus.PowOfWork;
 import org.ql.block.ledger.consensus.PowOfWorkForm;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.common.config.SpringContextUtil;
+import org.ql.block.ledger.model.blockdata.Transaction;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -73,7 +74,18 @@ public abstract class Block implements Serializable {
 
   public boolean validate(){
     PowOfWork powOfWork = SpringContextUtil.getBean("powOfWork",PowOfWork.class);
-    return powOfWork.validate(this);
+    /**
+     * 将包含在区块数据中的特殊交易取出，再进行hash验证
+     */
+    Transaction[] transactions = data.getTransactions();
+    Transaction[] transactionsWithoutReward = new Transaction[transactions.length - 1];
+    for (int i = 0; i < transactionsWithoutReward.length; i++) {
+      transactionsWithoutReward[i] = transactions[i+1];
+    }
+    this.data.setTransactions(transactionsWithoutReward);
+    boolean validate = powOfWork.validate(this);
+    this.data.setTransactions(transactions);
+    return validate;
   }
 
 }

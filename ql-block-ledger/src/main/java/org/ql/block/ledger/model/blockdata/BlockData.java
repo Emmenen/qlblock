@@ -28,9 +28,28 @@ public class BlockData implements Serializable {
     /**
      * 这里应该是用Mekle树，暂时未实现。
      */
-    return ObjectUtil.ObjectToByteArray(this);
+    StringBuilder sb = new StringBuilder();
+    try {
+      for (int i = 0; i < transactions.length; i++) {
+        sb.append(transactions[i].id);
+      }
+    }catch (NullPointerException e){
+
+    }
+    byte[] bytes = sb.append(textData).toString().getBytes();
+    String symbol = "qlBlock";
+    if (bytes.length<32){
+      int i = (32 - bytes.length) / 7 + 1;
+      for (int j = 0; j < i; j++) {
+        sb.append(symbol);
+      }
+    }
+    return sb.append(textData).toString().getBytes();
+
   }
   /**
+   * todo
+   * sha256报错byte的长度至少是32
    * 获取BlockData中数据的hash;
    * @return
    */

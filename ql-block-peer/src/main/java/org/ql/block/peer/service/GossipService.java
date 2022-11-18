@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 /**
@@ -36,7 +38,47 @@ public class GossipService {
    * @return 返回FutureTask供调用这获取传播消息的反馈；
    */
   public FutureTask<String> gossipSpread(PeerMessage message, MessageType messageType) {
-    Callable callable = () -> {
+    GossipCallable callable = new GossipCallable(message, messageType);
+    FutureTask<String> futureTask = new FutureTask<String>(callable);
+    //todo 消息发送不成功。
+    ThreadFactory.cachedThreadPool.execute(futureTask);
+    return futureTask;
+  }
+
+  public static void main(String[] args) {
+    ExecutorService executorService = Executors.newCachedThreadPool();
+    for (int i = 0; i < 3; i++) {
+      executorService.execute(new FutureTask<String>(new Callable<String>() {
+        @Override
+        public String call() throws Exception {
+          Thread.sleep(1000);
+          System.out.println("success");
+          return "success";
+        }
+      }));
+    }
+  }
+
+  /**
+   * 广播GET_BLOCKS消息
+   */
+  public void gossipGetBlocks(){
+    log.info("gossip spread:GET_BLOCKS");
+    GetBLock getBLock = new GetBLock(peerContext.getBestHeight());
+    gossipSpread(getBLock,MessageType.GET_BLOCKS);
+  }
+
+  class GossipCallable implements Callable{
+    private PeerMessage peerMessage;
+    private MessageType messageType;
+
+    public GossipCallable(PeerMessage peerMessage, MessageType messageType) {
+      this.peerMessage = peerMessage;
+      this.messageType = messageType;
+    }
+
+    @Override
+    public Object call() throws Exception {
       int count = 0;
       try {
         Set<Integer> spreadIndex = new HashSet<Integer>();
@@ -70,15 +112,17 @@ public class GossipService {
               count++;
             }
           }
+
           Iterator<Integer> spreadIterator = spreadIndex.iterator();
           while (spreadIterator.hasNext()){
             MySocket mySocket = socketList.get(spreadIterator.next());
-            if (mySocket.getMessageFlag(message)) {
+            if (mySocket.getMessageFlag(peerMessage)) {
               continue;
             }
             MyOutputStream out = new MyOutputStream(mySocket.getOutputStream());
-            out.write(new MessageVO(messageType,message));
-            mySocket.putMessage(message);
+            out.write(new MessageVO(messageType,peerMessage));
+            mySocket.putMessage(peerMessage);
+            log.info(messageType+"spread 'No."+count+"' peer success！");
           }
         }
       } catch (IOException e) {
@@ -86,20 +130,7 @@ public class GossipService {
       }
       log.info(messageType+"spread '"+count+"' peer success！");
       return messageType+"spread '"+count+"' peer success！";
-    };
-    FutureTask<String> futureTask = new FutureTask<String>(callable);
-    //todo 消息发送不成功。
-    ThreadFactory.cachedThreadPool.execute(futureTask);
-    return futureTask;
-  }
-
-  /**
-   * 广播GET_BLOCKS消息
-   */
-  public void gossipGetBlocks(){
-    log.info("gossip spread:GET_BLOCKS");
-    GetBLock getBLock = new GetBLock(peerContext.getBestHeight());
-    gossipSpread(getBLock,MessageType.GET_BLOCKS);
+    }
   }
 
 

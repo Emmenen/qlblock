@@ -25,6 +25,8 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
 
 /**
  * Created with IntelliJ IDEA at 2022/5/18 16:20
@@ -53,7 +55,7 @@ public class ClientThreadPool {
 
     public void startAClient(final MySocket client){
         //将连接到的节点的socket加入到已经连接的上下文中
-        Runnable runnable = ()->{
+        Callable callable = ()->{
             try {
                 while (true){
                     InputStream in = client.getInputStream();
@@ -86,7 +88,6 @@ public class ClientThreadPool {
                             gossipService.gossipSpread(gossipVersion,MessageType.GOSSIP_VERSION);
                             break;
                         case GET_BLOCKS:
-                            //
                             log.info("GET_BLOCKS");
                             log.info("请求区块信息来自:{}",client);
                             GetBLock getBLock = (GetBLock) message;
@@ -107,6 +108,7 @@ public class ClientThreadPool {
                             log.info("SET_BLOCK");
                             SetBlock setBlock = (SetBlock) message;
                             Block block = setBlock.getBlock();
+                            log.info("收到新挖出的区块{}",block);
 
                             //todo 区块验证
                             if (block.validate()) {
@@ -116,10 +118,10 @@ public class ClientThreadPool {
                                     //2. 将新加入的区块中的交易从本地交易池中去除
                                     //问题：
                                     //当有多个节点挖出块，后挖出的块先到达了该节点，如何确定将最新挖出的块存放到链上。
-                                    log.info("收到新的合法区块");
+                                    log.info("区块合法");
                                     peerContext.blockingMsgQueue.put(new ThreadMessageVO(new MintedBlock(block),ThreadMessageType.MINTED_BLOCK));
-                                    masterChainService.addBlock(block);
                                     log.info("将新块加入到链上");
+                                    masterChainService.addBlock(block);
                                 }
                             }
                             break;
@@ -138,10 +140,16 @@ public class ClientThreadPool {
                     }
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                e.printStackTrace(System.out);
+            } catch (Exception e){
+                e.printStackTrace(System.out);
+            } finally {
+                return "end";
             }
         };
-        ThreadFactory.cachedThreadPool.execute(runnable);
+        //当监听线程意外终止时
+        FutureTask<String> futureTask = new FutureTask<String>(callable);
+        ThreadFactory.execute(futureTask);
     }
 
     public void addNewAddrYou(HashSet<Peer> newAddrYouSet){
@@ -204,4 +212,5 @@ public class ClientThreadPool {
         List<Block> blockList = inv.getBlockList();
         masterChainService.addBlockAll(blockList);
     }
+
 }

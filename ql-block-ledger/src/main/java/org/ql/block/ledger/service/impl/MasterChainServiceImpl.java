@@ -1,7 +1,6 @@
 package org.ql.block.ledger.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.ql.block.ledger.exceptions.BlockOrderError;
 import org.ql.block.ledger.exceptions.GetBlockError;
 import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.model.blockchain.MasterBlockChain;
@@ -46,6 +45,11 @@ public class MasterChainServiceImpl implements MasterChainService {
   public List<Block> getBlocks(int offset, int number) throws GetBlockError {
     log.info("开启检索账本的第{}块到第{}块...",offset,offset+number-1);
     return masterBlockChain.getBlocks(offset,number);
+  }
+
+  @Override
+  public Block getBlock(String hash) throws GetBlockError {
+    return masterBlockChain.getBlock(hash);
   }
 
   @Override

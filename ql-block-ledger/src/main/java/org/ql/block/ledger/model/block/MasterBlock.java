@@ -10,17 +10,18 @@ import org.ql.block.ledger.model.blockdata.Transaction;
  * email: 592918942@qq.com
  */
 public class MasterBlock extends Block {
-
   @Override
   public String toString() {
     return "MasterBlock{" +
             "previousHash='" + previousHash + '\'' +
             ", currentHash='" + currentHash + '\'' +
             ", nonce=" + nonce +
-            ", data=" + data.getTextData() +
+            ", timestamp=" + timestamp +
+            ", miner='" + miner + '\'' +
+            ", height=" + height +
+            ", data=" + data +
             '}';
   }
-
 
 
   public MasterBlock(String previousHash, BlockData data) {
@@ -38,6 +39,7 @@ public class MasterBlock extends Block {
     }
     transactionsReward[0] = new Transaction(miner,50);
     BlockData blockData = new BlockData(transactionsReward);
+
     this.data = blockData;
   }
 
@@ -48,15 +50,6 @@ public class MasterBlock extends Block {
 
   @Override
   public boolean validate() {
-    /**
-     * 将包含在区块数据中的特殊交易取出，再进行hash验证
-     */
-    Transaction[] transactions = data.getTransactions();
-    Transaction[] transactionsWithoutReward = new Transaction[transactions.length - 1];
-    for (int i = 0; i < transactionsWithoutReward.length; i++) {
-      transactionsWithoutReward[i] = transactions[i+1];
-    }
-    this.data.setTransactions(transactionsWithoutReward);
     return super.validate();
   }
 }

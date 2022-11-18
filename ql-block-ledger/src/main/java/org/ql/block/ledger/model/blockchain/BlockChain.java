@@ -74,7 +74,7 @@ public abstract class BlockChain {
       Block block = this.newGenesisBlock();
       this.deep = -1;
       addBlock(block);
-    }else {
+    } else {
       this.tip = new String(bucketBucketDb.get(Iq80DBFactory.bytes("l")));
       log.info("最新区块Hash："+this.tip);
       this.deep = this.getHeight();
@@ -97,9 +97,9 @@ public abstract class BlockChain {
    * @throws GetBlockError
    */
   public LinkedList<Block> getBlocks(int offset, int number) throws GetBlockError {
-    if (offset<1){
-      log.error("取出区块异常, offset 的值最小为1");
-      throw new GetBlockError("取出区块异常, offset 的值最小为1");
+    if (offset<0){
+      log.error("取出区块异常, offset 的值最小为0");
+      throw new GetBlockError("取出区块异常, offset 的值最小为0");
     }
     if (number<1){
       log.error("取出区块异常, number 的值最小为1");
@@ -145,6 +145,9 @@ public abstract class BlockChain {
     log.info("当前区块高度："+deep);
     this.deep++;
     database.update(BLOCK_BUCKET, bucket ->{
+      if (!block.previousHash.equals(tip)){
+        return;
+      }
       bucket.put(Iq80DBFactory.bytes(block.currentHash),ObjectToByteArray(block));
       log.info("添加新的区块到链上(perHash: {})",block.previousHash);
       log.info("添加新的区块到链上(currentHash: {})",block.currentHash);

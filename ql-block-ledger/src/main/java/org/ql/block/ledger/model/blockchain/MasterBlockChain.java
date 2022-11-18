@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.ql.block.common.annotation.AddBlock;
 import org.ql.block.ledger.exceptions.GetBlockError;
 import org.ql.block.ledger.model.block.MasterBlock;
+import org.ql.block.ledger.model.block.MasterGenesisBlock;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.ledger.model.blockdata.TXInput;
 import org.ql.block.ledger.model.blockdata.TXOutput;
@@ -36,7 +37,7 @@ public class MasterBlockChain extends BlockChain{
   }
 
   public MasterBlock newGenesisBlock(){
-    MasterBlock masterBlock = new MasterBlock("genesis", new BlockData("genesis"));
+    MasterBlock masterBlock = new MasterGenesisBlock("genesis", new BlockData("genesis"));
     return masterBlock;
   }
 
@@ -47,7 +48,6 @@ public class MasterBlockChain extends BlockChain{
     if (block.validate()) {
       addBlock(block);
     }
-    addBlock(block);
     return block;
   }
 

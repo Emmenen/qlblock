@@ -25,6 +25,8 @@ public interface MasterChainService {
    */
   public List<Block> getBlocks(int offset,int number) throws GetBlockError;
 
+  public Block getBlock(String hash) throws GetBlockError;
+
   public void addBlock(Block block);
 
   public boolean addBlockAll(Collection<Block> c);
