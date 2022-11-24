@@ -1,7 +1,7 @@
 package org.ql.block.browser.controller;
 
 import org.ql.block.browser.vo.ResponseVo;
-import org.ql.block.ledger.exceptions.GetBlockError;
+import org.ql.block.common.exceptions.GetBlockError;
 import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.model.block.MasterBlock;
 import org.ql.block.ledger.model.blockdata.BlockData;

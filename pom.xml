@@ -6,15 +6,10 @@
     <artifactId>ql-block</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-
     <modules>
         <module>ql-block-peer</module>
         <module>ql-block-ledger</module>
         <module>ql-block-browser</module>
-        <module>ql-block-section</module>
-        <module>ql-block-common</module>
-        <module>ql-block-beans</module>
-        <module>ql-block-sys</module>
     </modules>
 
     <properties>
@@ -31,33 +26,6 @@
     </properties>
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.ql.block</groupId>
-                <artifactId>ql-block-section</artifactId>
-                <version>${ql.block.verison}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ql.block</groupId>
-                <artifactId>ql-block-common</artifactId>
-                <version>${ql.block.verison}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ql.block</groupId>
-                <artifactId>ql-block-browser</artifactId>
-                <version>${ql.block.verison}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ql.block</groupId>
-                <artifactId>ql-block-ledger</artifactId>
-                <version>${ql.block.verison}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ql.block</groupId>
-                <artifactId>ql-block-peer</artifactId>
-                <version>${ql.block.verison}</version>
-            </dependency>
-
-
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-configuration-processor</artifactId>
