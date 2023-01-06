@@ -18,7 +18,7 @@ import java.util.Map;
  * Author: @Qi Long
  * email: 592918942@qq.com
  */
-@Service
+@Service("databaseService")
 public class DatabaseServiceImpl implements DatabaseService {
 
   @Autowired

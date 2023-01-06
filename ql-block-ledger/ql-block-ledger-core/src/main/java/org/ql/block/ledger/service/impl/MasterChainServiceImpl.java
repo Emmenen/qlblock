@@ -28,7 +28,6 @@ public class MasterChainServiceImpl implements MasterChainService {
 
   private MasterBlockChain masterBlockChain;
 
-
   @Autowired
   private SalveChainService salveChainService;
 

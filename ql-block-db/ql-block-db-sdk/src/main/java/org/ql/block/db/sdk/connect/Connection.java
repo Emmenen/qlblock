@@ -25,6 +25,7 @@ public class Connection {
     try {
       this.socket = socket;
       this.dataBase = dataBase;
+      
       OutputStream out = socket.getOutputStream();
       InputStream in = socket.getInputStream();
       this.obOut = new ObjectOutputStream(out);

@@ -15,5 +15,9 @@ qlblock:
   consensus:
     performanceOccupy: 0.1%
     isMinter: no
+  database:
+    name: test
+    ip: 127.0.0.1
+    port: 9731
 server:
   port: 8081
