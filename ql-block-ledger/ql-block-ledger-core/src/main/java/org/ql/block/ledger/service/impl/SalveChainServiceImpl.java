@@ -1,7 +1,5 @@
 package org.ql.block.ledger.service.impl;
 
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.ql.block.common.config.SpringContextUtil;
 import org.ql.block.ledger.communication.salve.SalveApply;
 import org.ql.block.ledger.model.block.SalveBlock;
@@ -42,17 +40,15 @@ public class SalveChainServiceImpl implements SalveChainService {
     databaseService.createBucket(CHAIN_STATE);
 
 
-    DB bucket = salveBlockChain.databaseImpl.createIfNotExistBuket(CHAIN_STATE);
     /**
      * 首先从世界状态中取出申请
      */
-    Object o = databaseService.selectOne(CHAIN_STATE, CHAIN_APPLY);
-    SalveApply salveApply = ObjectUtil.byteArrayToObject(bucket.get(Iq80DBFactory.bytes(CHAIN_APPLY)), SalveApply.class);
+    SalveApply salveApply = (SalveApply) databaseService.selectOne(CHAIN_STATE, CHAIN_APPLY);
     /**
      * 将新的申请添加到申请中
      */
     salveApply.addApply(salveBlock);
-    bucket.put(Iq80DBFactory.bytes(CHAIN_APPLY),ObjectUtil.ObjectToByteArray(salveApply));
+    databaseService.insertOrUpdate(CHAIN_STATE,CHAIN_APPLY,ObjectUtil.ObjectToByteArray(salveApply));
     return salveBlock;
   }
 

@@ -1,11 +1,8 @@
 package org.ql.block.ledger.model.utxo;
 
 import lombok.extern.slf4j.Slf4j;
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.DBIterator;
-import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.ql.block.common.exceptions.BalanceNotEnoughError;
-import org.ql.block.db.sdk.message.ResponseVo;
+import org.ql.block.db.share.message.ResponseVo;
 import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.model.blockchain.BlockChain;
 import org.ql.block.ledger.model.blockdata.BlockData;
@@ -17,6 +14,7 @@ import org.ql.block.ledger.util.ObjectUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -69,10 +67,11 @@ public class UTXO {
           utxos.add(outputList.get(i));
         }
       }
-      spendableOutput.put(Iq80DBFactory.asString(next.getKey()),utxos.toArray(new UnSpentOutput[0]));
+      spendableOutput.put(new String(next.getKey(), StandardCharsets.UTF_8),utxos.toArray(new UnSpentOutput[0]));
     }
     return spendableOutput;
   }
+
   /**
    * 查询一个地址的所有可以消费的交易输出
    * @param address
@@ -113,7 +112,6 @@ public class UTXO {
     BlockData data = block.getData();
     //获取区块体中的交易
     Transaction[] transactions = data.getTransactions();
-    DB bucket = blockChain.databaseImpl.getBucket(UTXO_BUCKET);
 
     //遍历交易
     for (Transaction tx : transactions) {
@@ -121,7 +119,7 @@ public class UTXO {
       if (!tx.isBaseCoin()){
         for (int i = 0; i < vIn.length; i++) {
           //取出交易中引用的交易ID,然后消费其中的交易输出
-          ArrayList<TXOutput> voutIndex = ObjectUtil.byteArrayToObject(bucket.get(Iq80DBFactory.bytes(vIn[i].Txid)),ArrayList.class);
+          ArrayList<TXOutput> voutIndex = (ArrayList<TXOutput>) databaseService.selectOne(UTXO_BUCKET,vIn[i].Txid);
 
           for (int j = 0; j < voutIndex.size(); j++) {
            // 判断取出的交易中的交易输出是否被消费
@@ -134,9 +132,9 @@ public class UTXO {
 
           //如果一个txid下的所有未消费的交易输出都被新的交易引用（消费）了，则从UTXO中删除该txid;
           if (voutIndex.size()==0){
-            bucket.delete(Iq80DBFactory.bytes(vIn[i].Txid));
+            databaseService.delete(UTXO_BUCKET,vIn[i].Txid);
           }else {
-            bucket.put(Iq80DBFactory.bytes(vIn[i].Txid),ObjectUtil.ObjectToByteArray(voutIndex));
+            databaseService.insertOrUpdate(UTXO_BUCKET,vIn[i].Txid,ObjectUtil.ObjectToByteArray(voutIndex));
           }
         }
       }
@@ -147,7 +145,7 @@ public class UTXO {
       for (int i = 0; i < vOut.length; i++) {
         unSpend.add(i);
       }
-      bucket.put(Iq80DBFactory.bytes(tx.id),ObjectUtil.ObjectToByteArray(unSpend));
+      databaseService.insertOrUpdate(UTXO_BUCKET,tx.id,ObjectUtil.ObjectToByteArray(unSpend));
     }
   }
 

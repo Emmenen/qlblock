@@ -30,11 +30,5 @@
             <artifactId>spring-web</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.fusesource.leveldbjni/leveldbjni -->
-        <dependency>
-            <groupId>org.fusesource.leveldbjni</groupId>
-            <artifactId>leveldbjni</artifactId>
-        </dependency>
-
     </dependencies>
 </project>

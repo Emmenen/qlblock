@@ -6,7 +6,6 @@ import org.ql.block.db.share.message.ResponseVo;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -36,9 +35,12 @@ public class Connection {
 
     this.socket = socket;
   }
+  public DBExecute preExecute(String option){
+    return new DBExecute(this,option);
+  }
 
-  public ResponseVo sendCommand(Operation operation){
-    ResponseVo responseVo = null;
+  public ResponseVo execute(Operation operation){
+    ResponseVo responseVo;
     try {
       obOut.writeObject(operation);
       String str = (String) obIn.readObject();
@@ -50,19 +52,15 @@ public class Connection {
     return ResponseVo.error(null);
   }
 
-  public DBExecute preExecute(String option){
-    return new DBExecute(this,option);
-  }
-
   /**
    * 统一指令接口
    * @param operation
    * @return
    */
   public ResponseVo sendCommand(String operation){
-    ResponseVo responseVo = null;
+    ResponseVo responseVo;
     try {
-      obOut.write(operation.getBytes(StandardCharsets.UTF_8));
+      obOut.writeObject(operation);
       String str = (String) obIn.readObject();
       responseVo = JSON.parseObject(str, ResponseVo.class);
       return responseVo;
@@ -71,6 +69,9 @@ public class Connection {
     }
     return ResponseVo.error(null);
   }
+
+
+
 
   public ResponseVo<String> simpleCommand(Operation operation) throws IOException, ClassNotFoundException {
     obOut.writeObject(operation);

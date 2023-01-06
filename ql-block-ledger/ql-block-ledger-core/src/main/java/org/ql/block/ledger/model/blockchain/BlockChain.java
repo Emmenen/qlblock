@@ -1,13 +1,12 @@
 package org.ql.block.ledger.model.blockchain;
 
 import lombok.extern.slf4j.Slf4j;
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
 import org.ql.block.common.beans.annotation.AddBlock;
 import org.ql.block.common.exceptions.BlockOrderError;
 import org.ql.block.common.exceptions.GetBlockError;
-import org.ql.block.db.sdk.message.ResponseVo;
+import org.ql.block.db.share.message.ResponseVo;
+import org.ql.block.db.share.utils.Iq80Factory;
 import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.ledger.model.blockdata.Transaction;
@@ -139,8 +138,8 @@ public abstract class BlockChain {
     log.info("矿工(minter: {})",block.miner);
     this.deep++;
     this.tip = block.currentHash;
-    databaseService.insertOrUpdate(BLOCK_BUCKET,"l",tip);
-    databaseService.insertOrUpdate(BLOCK_BUCKET,"d", String.valueOf(deep));
+    databaseService.insertOrUpdate(BLOCK_BUCKET,"l", Iq80Factory.bytes(tip));
+    databaseService.insertOrUpdate(BLOCK_BUCKET,"d", deep);
     //放后面的作用是先存放区块高度再+1，因为创始区块的高度为0;
     log.info("当前区块高度："+getHeight());
     if (deepPre<deep){

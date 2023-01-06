@@ -2,7 +2,6 @@ package org.ql.block.ledger.model.blockchain;
 
 import org.jetbrains.annotations.NotNull;
 import org.ql.block.common.exceptions.GetBlockError;
-import org.ql.block.db.sdk.connect.Connection;
 import org.ql.block.ledger.model.block.MasterBlock;
 import org.ql.block.ledger.model.block.MasterGenesisBlock;
 import org.ql.block.ledger.model.blockdata.BlockData;

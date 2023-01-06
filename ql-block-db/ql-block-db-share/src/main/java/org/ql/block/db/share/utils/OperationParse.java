@@ -8,6 +8,7 @@ import org.ql.block.db.share.exceptions.OptionalSyntaxException;
 import org.ql.block.db.share.message.Limit;
 import org.ql.block.db.share.message.Operation;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 
 /**
@@ -70,12 +71,12 @@ public class OperationParse {
       case INSERT:
       case UPDATE:
         operation.setTarget(queue.poll());
-        operation.setKey(queue.poll());
-        operation.setValue(queue.poll());
+        operation.setKey(Iq80Factory.bytes(queue.poll()));
+        operation.setValue(Iq80Factory.bytes(queue.poll()));
         break;
       case SELECT:
         operation.setTarget(queue.poll());
-        operation.setKey(queue.poll());
+        operation.setKey(Iq80Factory.bytes(queue.poll()));
         break;
       case USE:
         operation.setDatabase(queue.poll());

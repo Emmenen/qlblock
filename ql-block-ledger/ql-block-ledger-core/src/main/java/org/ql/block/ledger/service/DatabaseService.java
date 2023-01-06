@@ -16,8 +16,13 @@ public interface DatabaseService {
   public void createDatabase(String databaseName);
   public ResponseVo createBucket(String bucketName);
   public ResponseVo deleteBucket(String bucketName);
-  public void insertOrUpdate(String bucket,String key,String value);
   public void insertOrUpdate(String bucket,String key,byte[] value);
+  public void insertOrUpdate(String bucket,String key,byte value);
+  public void insertOrUpdate(String bucket,String key,int value);
+  public void insertOrUpdate(String bucket,byte[] key,byte[] value);
+  public void insertOrUpdate(String bucket,byte key,byte value);
+  public void insertOrUpdate(String bucket,int key,int value);
+  public void delete(String bucket,String key);
   public ResponseVo select(String bucket, String key);
   public Object selectOne(String bucket, String key);
   public Integer getCount(String bucket);

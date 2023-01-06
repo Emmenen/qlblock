@@ -3,6 +3,7 @@ package org.ql.block.db.share.message;
 import lombok.Data;
 import org.ql.block.db.share.enums.CommandEnum;
 import org.ql.block.db.share.enums.TypeEnum;
+import org.ql.block.db.share.utils.Iq80Factory;
 
 import java.io.Serializable;
 import java.util.Random;
@@ -19,8 +20,8 @@ public class Operation implements Message, Serializable {
   private TypeEnum type;
   private String target;
   private String database;
-  private String key;
-  private String value;
+  private byte[] key;
+  private byte[] value;
   private Limit limit;
 
   public Operation() {
@@ -38,7 +39,7 @@ public class Operation implements Message, Serializable {
 
   @Override
   public String toString() {
-    return this.getCommand()+" "+this.getDatabase()+" "+this.getType()+" "+this.getTarget()+" "+this.key+" "+this.getValue();
+    return this.getCommand()+" "+this.getDatabase()+" "+this.getType()+" "+this.getTarget()+" "+ Iq80Factory.asString(this.getKey()) +" "+ new String(this.getValue());
   }
 
 

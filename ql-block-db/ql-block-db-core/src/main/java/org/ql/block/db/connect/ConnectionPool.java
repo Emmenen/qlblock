@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBIterator;
-import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.ql.block.db.service.DataBase;
 import org.ql.block.db.config.DatabaseConfig;
 import org.ql.block.db.config.ThreadFactory;
@@ -13,13 +12,11 @@ import org.ql.block.db.share.exceptions.OptionalSyntaxException;
 import org.ql.block.db.share.message.Limit;
 import org.ql.block.db.share.message.Operation;
 import org.ql.block.db.share.message.ResponseVo;
+import org.ql.block.db.share.utils.Iq80Factory;
 import org.ql.block.db.share.utils.OperationParse;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -41,6 +38,7 @@ public class ConnectionPool {
   public void startAConnection(Socket socket){
     Callable stringCallable = () -> {
       InputStream in = socket.getInputStream();
+      ObjectInputStream oin = new ObjectInputStream(in);
       ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
       boolean first = true;
       DataBase<DB> dataBase = null;
@@ -52,14 +50,16 @@ public class ConnectionPool {
       dataBase = DatabaseConfig.levelDB();
       while (true){
         try {
-          byte[] bytes = new byte[1024];
-          int len = -1;
-          StringBuilder sb = new StringBuilder();
-          while ((len = in.read(bytes)) != -1){
-            sb.append(new String(bytes,0,len));
-            if (in.available()==0)break;
+          Operation operation;
+          Object o = oin.readObject();
+          try {
+            //通过语句发送命令
+            String str = (String) o;
+            operation = OperationParse.toOperation(str);
+          }catch (ClassCastException e){
+            //通过Operation对象发送命令
+            operation = (Operation) o;
           }
-          Operation operation = OperationParse.toOperation(sb.toString());
           String bucketName = operation.getTarget();
           log.info(operation.toString());
 
@@ -97,16 +97,19 @@ public class ConnectionPool {
               break;
             case INSERT:
             case UPDATE:
+              byte[] updKey = operation.getKey();
+              byte[] updValue = operation.getValue();
               dataBase.update(bucketName,bucket->{
                 DB db = bucket;
-                db.put(Iq80DBFactory.bytes(operation.getKey()),Iq80DBFactory.bytes(operation.getValue()));
+                db.put(updKey,updValue);
               });
               res = ResponseVo.okJson(operation.getUid(),null);
               break;
             case DELETE:
+              byte[] delKey = operation.getKey();
               dataBase.update(bucketName,bucket->{
                 DB db = bucket;
-                db.delete(Iq80DBFactory.bytes(operation.getKey()));
+                db.delete(delKey);
               });
               res = ResponseVo.okJson(operation.getUid(),null);
               break;
@@ -114,7 +117,7 @@ public class ConnectionPool {
               DB bucket = dataBase.getBucket(operation.getTarget());
               ArrayList<Map.Entry<byte[], byte[]>> dataC = new ArrayList<>();
               //todo 正则表达式
-              if (operation.getKey().equals("*")){
+              if (Iq80Factory.asString(operation.getKey()).equals("*")){
                 DBIterator iterator = bucket.iterator();
                 Limit limit = operation.getLimit();
                 if (limit !=null ){
@@ -140,7 +143,7 @@ public class ConnectionPool {
                 }
               }
               else {
-                dataC.add(new AbstractMap.SimpleEntry<>(Iq80DBFactory.bytes(operation.getKey()),bucket.get(Iq80DBFactory.bytes(operation.getKey()))));
+                dataC.add(new AbstractMap.SimpleEntry<>(operation.getKey(),bucket.get(operation.getKey())));
               }
               res = ResponseVo.okJson(operation.getUid(),dataC);
               break;

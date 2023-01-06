@@ -1,9 +1,6 @@
 package org.ql.block.ledger.model.blockchain;
 
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.impl.Iq80DBFactory;
-import org.ql.block.db.sdk.connect.Connection;
-import org.ql.block.db.sdk.message.ResponseVo;
+
 import org.ql.block.ledger.config.LedgerConfig;
 import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.service.DatabaseService;

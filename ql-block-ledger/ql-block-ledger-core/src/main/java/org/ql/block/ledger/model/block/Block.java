@@ -1,7 +1,6 @@
 package org.ql.block.ledger.model.block;
 
 import com.alibaba.fastjson.JSON;
-import org.ql.block.db.sdk.message.ObjectUtil;
 import org.ql.block.ledger.consensus.impl.PowOfWork;
 import org.ql.block.ledger.consensus.impl.PowOfWorkForm;
 import org.ql.block.ledger.model.blockdata.BlockData;

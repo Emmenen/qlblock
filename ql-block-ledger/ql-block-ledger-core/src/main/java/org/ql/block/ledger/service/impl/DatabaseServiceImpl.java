@@ -4,6 +4,7 @@ import org.ql.block.db.sdk.connect.Connection;
 import org.ql.block.db.share.enums.CommandEnum;
 import org.ql.block.db.share.message.Operation;
 import org.ql.block.db.share.message.ResponseVo;
+import org.ql.block.db.share.utils.Iq80Factory;
 import org.ql.block.ledger.service.DatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,16 +45,51 @@ public class DatabaseServiceImpl implements DatabaseService {
 
   }
 
-  @Override
-  public void insertOrUpdate(String bucket, String key, String value) {
-    connection.preExecute("insert "+bucket+" "+key+" "+value).execute();
-  }
 
   @Override
   public void insertOrUpdate(String bucket, String key, byte[] value) {
+    insertOrUpdate(bucket,Iq80Factory.bytes(key),value);
+
+  }
+
+  @Override
+  public void insertOrUpdate(String bucket, String key, byte value) {
+    insertOrUpdate(bucket,Iq80Factory.bytes(key),new byte[]{value});
+
+  }
+
+  @Override
+  public void insertOrUpdate(String bucket, String key, int value) {
+
+    insertOrUpdate(bucket,Iq80Factory.bytes(key),new byte[]{(byte) value});
+
+  }
+
+  @Override
+  public void insertOrUpdate(String bucket, byte[] key, byte[] value) {
     Operation operation = new Operation();
     operation.setCommand(CommandEnum.INSERT);
-    connection.preExecute("insert "+bucket+" "+key+" "+ Arrays.toString(value)).execute();
+    operation.setTarget(bucket);
+    operation.setKey(key);
+    operation.setValue(value);
+    connection.execute(operation);
+  }
+
+  @Override
+  public void insertOrUpdate(String bucket, byte key, byte value) {
+    insertOrUpdate(bucket,new byte[]{key},new byte[]{value});
+  }
+
+  @Override
+  public void insertOrUpdate(String bucket, int key, int value) {
+    insertOrUpdate(bucket,new byte[]{(byte) key},new byte[]{(byte) value});
+
+  }
+
+
+  @Override
+  public void delete(String bucket, String key) {
+    connection.preExecute("delete "+ bucket +" "+key).execute();
   }
 
   @Override
