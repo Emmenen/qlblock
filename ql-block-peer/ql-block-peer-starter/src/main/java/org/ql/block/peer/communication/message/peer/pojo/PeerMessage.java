@@ -6,5 +6,7 @@ package org.ql.block.peer.communication.message.peer.pojo;
  * email: 592918942@qq.com
  */
 public interface PeerMessage {
+
+  //判断消息是否重复的字段
   long UID();
 }

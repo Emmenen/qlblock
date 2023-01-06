@@ -8,12 +8,12 @@ qlblock:
     version: 0.0.1-SNAPSHOT
   ledger:
     wallet:
-      key: 2RxV4m78RGjpDZ5VV6TTtkSkRKgEC58qoYKq5rA4jkjPUbhnCXU6Uq3a9y6kq3eMgse9hWHTFDkVWPeisyzuXANQ95fQ
+      key:
   sys:
     log:
       ismintprocess: yes
   consensus:
     performanceOccupy: 0.1%
-    isMinter: no
+    isMinter: yes
 server:
   port: 8081

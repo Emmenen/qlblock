@@ -5,22 +5,20 @@ import org.iq80.leveldb.DB;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
 import org.ql.block.common.beans.annotation.AddBlock;
-import org.ql.block.ledger.db.Database;
 import org.ql.block.common.exceptions.BlockOrderError;
-import org.ql.block.common.exceptions.DataBaseIsNotExistError;
 import org.ql.block.common.exceptions.GetBlockError;
+import org.ql.block.db.sdk.message.ResponseVo;
 import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.ledger.model.blockdata.Transaction;
 import org.ql.block.ledger.model.utxo.UnSpentOutput;
-import org.ql.block.ledger.util.MathUtils;
+import org.ql.block.ledger.service.DatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.ql.block.ledger.util.ObjectUtil.ObjectToByteArray;
-import static org.ql.block.ledger.util.ObjectUtil.byteArrayToObject;
+import static org.ql.block.ledger.config.LedgerConfig.BLOCK_BUCKET;
 
 /**
  * Created at 2022/6/29 20:09
@@ -29,11 +27,6 @@ import static org.ql.block.ledger.util.ObjectUtil.byteArrayToObject;
  */
 @Slf4j
 public abstract class BlockChain {
-
-
-  protected static final String BLOCK_BUCKET = "blockBucket";
-  protected static final String CHAIN_STATE = "chainState";
-  protected DB bucketBucketDb;
 
   /**
    * 存放区块链数据的bucket名称
@@ -49,34 +42,26 @@ public abstract class BlockChain {
    */
   public int deep;
 
-  public Database database;
-
+  private DatabaseService databaseService;
 
   @Autowired
-  public BlockChain(Database staticDatabase) {
-    this.database = staticDatabase;
+  public BlockChain(DatabaseService databaseService) {
+    this.databaseService = databaseService;
   }
 
-  protected void init(Database staticDatabase){
-    try {
-      this.database = staticDatabase.connect(ChainName);
-    } catch (DataBaseIsNotExistError e) {
-      staticDatabase.createBucket(ChainName);
-      this.database = staticDatabase.createDatabase(ChainName);
-    }
-
-    this.bucketBucketDb = this.database.getBucket(BLOCK_BUCKET);
-    if (null==bucketBucketDb) {
-      this.bucketBucketDb = database.createBucket(BLOCK_BUCKET);
+  protected void init(){
+    databaseService.useDatabase(ChainName);
+    ResponseVo creatRes = databaseService.createBucket(BLOCK_BUCKET);
+    if (creatRes.getStatus()==200) {
+      //创建成功
       Block block = this.newGenesisBlock();
       this.deep = -1;
       addBlock(block);
     } else {
-      this.tip = new String(bucketBucketDb.get(Iq80DBFactory.bytes("l")));
+      //创建失败-》已经存在
+      this.tip = getData("l");
       log.info("最新区块Hash："+this.tip);
       this.deep = this.getHeight();
-      byte[] d = bucketBucketDb.get(Iq80DBFactory.bytes("d"));
-      this.deep = MathUtils.byteArrayToInt(d);
       log.info("区块高度："+this.deep);
     }
   }
@@ -129,7 +114,7 @@ public abstract class BlockChain {
   }
 
   public Integer getHeight(){
-    return MathUtils.byteArrayToInt(getData("d"));
+    return Integer.parseInt(getData("d"));
   }
 
   public String getLastHash(){
@@ -145,19 +130,17 @@ public abstract class BlockChain {
       //高度为-1时，则说明区块高度没有被初始化
       block.height = deepPre;
     }
-    database.update(BLOCK_BUCKET, bucket ->{
-      if (!block.previousHash.equals(tip)){
-        return;
-      }
-      bucket.put(Iq80DBFactory.bytes(block.currentHash),ObjectToByteArray(block));
-      log.info("添加新的区块到链上(perHash: {})",block.previousHash);
-      log.info("添加新的区块到链上(currentHash: {})",block.currentHash);
-      log.info("矿工(minter: {})",block.miner);
-      this.deep++;
-      this.tip = block.currentHash;
-      bucket.put(Iq80DBFactory.bytes("l"),Iq80DBFactory.bytes(tip));
-      bucket.put(Iq80DBFactory.bytes("d"),MathUtils.intToByteArray(this.deep));
-    });
+    if (!block.previousHash.equals(tip)){
+      throw new BlockOrderError("区块hash错误");
+    }
+    databaseService.insertOrUpdate(BLOCK_BUCKET,block.currentHash,block.toByte());
+    log.info("添加新的区块到链上(perHash: {})",block.previousHash);
+    log.info("添加新的区块到链上(currentHash: {})",block.currentHash);
+    log.info("矿工(minter: {})",block.miner);
+    this.deep++;
+    this.tip = block.currentHash;
+    databaseService.insertOrUpdate(BLOCK_BUCKET,"l",tip);
+    databaseService.insertOrUpdate(BLOCK_BUCKET,"d", String.valueOf(deep));
     //放后面的作用是先存放区块高度再+1，因为创始区块的高度为0;
     log.info("当前区块高度："+getHeight());
     if (deepPre<deep){
@@ -189,19 +172,15 @@ public abstract class BlockChain {
     return true;
   }
 
-  public byte[] getData(String key){
-    byte[] bytes = bucketBucketDb.get(Iq80DBFactory.bytes(key));
-    return bytes;
+  public String getData(String key){
+    return (String) databaseService.select(BLOCK_BUCKET, key).getData().iterator().next();
   }
 
   public Block getBlock(String blockHash){
-    byte[] data = getData(blockHash);
-    return (Block) byteArrayToObject(data);
+    String data = getData(blockHash);
+    return Block.formByte(data.getBytes());
   }
 
-  public DB getBlockDB(){
-    return this.bucketBucketDb;
-  }
 
   public ConcurrentHashMap<String, ArrayList<UnSpentOutput>> FindUTXO(){
     ConcurrentHashMap<String, ArrayList<Integer>> spentTXOs = new ConcurrentHashMap<>();
@@ -241,9 +220,9 @@ public abstract class BlockChain {
     return UTXO;
   }
 
-
   public BLockChainIterator Iterator(){
-    BLockChainIterator bLockChainIterator = new BLockChainIterator(tip, getBlockDB());
+    BLockChainIterator bLockChainIterator = new BLockChainIterator(tip, databaseService);
     return bLockChainIterator;
   }
+
 }

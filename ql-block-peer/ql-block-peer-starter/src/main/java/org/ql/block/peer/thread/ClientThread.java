@@ -29,7 +29,7 @@ public class ClientThread implements Runnable{
     private static final int retry = 3;
 
     @Autowired
-    private ClientThreadPool clientThreadPool;
+    private ConnectedThreadPool connectedThreadPool;
 
     public ClientThread() {
     }
@@ -52,7 +52,7 @@ public class ClientThread implements Runnable{
                         log.info("Try to connect node {} {} times",peer,i+1);
                         MySocket client = new MySocket(peer);
                         log.info("连接第{}个节点:{}成功!",connectList.size()+1,peer.toString());
-                        clientThreadPool.startAClient(client);
+                        connectedThreadPool.startAClient(client);
                         MyOutputStream myOutputStream = client.getMyOutputStream();
                         myOutputStream.write(new MessageVO(MessageType.VERSION,peerContext.getVersion()));
                         peerContext.addOnePeer(client);

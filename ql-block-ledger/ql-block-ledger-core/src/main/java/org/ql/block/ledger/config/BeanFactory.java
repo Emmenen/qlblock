@@ -3,11 +3,14 @@ package org.ql.block.ledger.config;
 import lombok.extern.slf4j.Slf4j;
 import org.ql.block.common.config.properties.QlBlockConfiguration;
 import org.ql.block.common.exceptions.WalletInformationError;
-import org.ql.block.ledger.wallet.Identify;
+import org.ql.block.db.sdk.connect.Connection;
+import org.ql.block.ledger.model.blockchain.MasterBlockChain;
+import org.ql.block.ledger.service.DatabaseService;
 import org.ql.block.ledger.wallet.Wallet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Created at 2022/7/16 1:51
@@ -30,14 +33,21 @@ public class BeanFactory {
       log.error(e.getMessage());
     }
     if (wallet.isConnected()){
+      log.info("钱包连接成功，{}",wallet);
+
     }else {
       log.warn("尚未连接钱包, 为避免损失, 请在连接其他节点前导入您的账户地址！");
-      log.warn("我们会为你创建一个新的钱包地址");
-      Identify identify = wallet.createIdentify("qlblock" + System.currentTimeMillis());
-      wallet.connectUser(identify);
+//      log.warn("我们会为你创建一个新的钱包地址");
+//      Identify identify = wallet.createIdentify("qlblock" + System.currentTimeMillis());
+//      wallet.connectUser(identify);
     }
-    log.info("钱包连接成功，{}",wallet);
     return wallet;
   }
 
+  @Bean("masterChain")
+  @DependsOn("databaseService")
+  @Autowired
+  public MasterBlockChain masterBlockChain(DatabaseService databaseService){
+    return new MasterBlockChain(databaseService);
+  }
 }

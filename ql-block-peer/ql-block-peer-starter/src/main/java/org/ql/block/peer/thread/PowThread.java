@@ -31,6 +31,7 @@ import java.util.concurrent.FutureTask;
 @Component
 @Slf4j
 public class PowThread implements Callable {
+
   @Autowired
   private PeerContext peerContext;
 
@@ -101,7 +102,7 @@ public class PowThread implements Callable {
           Block block = blockChain.addBlock(blockData);
           /**
            * 发送区块
-           * 对应的就是关于接受到新区块时的处理{@link ClientThreadPool#startAClient}
+           * 对应的就是关于接受到新区块时的处理{@link ConnectedThreadPool#startAClient}
            */
           log.info("挖出新的区块,开始广播区块");
           gossipService.gossipSpread(new SetBlock(block), MessageType.SET_BLOCK);

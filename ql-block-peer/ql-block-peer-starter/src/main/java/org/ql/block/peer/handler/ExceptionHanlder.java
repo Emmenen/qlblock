@@ -18,9 +18,6 @@ import java.net.SocketException;
 @RestControllerAdvice
 public class ExceptionHanlder {
 
-    //todo #1 2022年10月6日21:57:40 处理连接断开的情况
-    @Autowired
-    private PeerContext peerContext;
 
     @ExceptionHandler(SocketException.class)
     public ResponseEntity<String> bindExceptionHandler(SocketException e){

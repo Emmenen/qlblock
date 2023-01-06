@@ -1,0 +1,19 @@
+qlblock:
+  peer:
+    seednode:
+      ip: 127.0.0.1
+      port: 8001
+    ip: 127.0.0.1
+    port: 8001
+    version: 0.0.1-SNAPSHOT
+  ledger:
+    wallet:
+      key:
+  sys:
+    log:
+      ismintprocess: yes
+  consensus:
+    performanceOccupy: 0.1%
+    isMinter: no
+server:
+  port: 8081

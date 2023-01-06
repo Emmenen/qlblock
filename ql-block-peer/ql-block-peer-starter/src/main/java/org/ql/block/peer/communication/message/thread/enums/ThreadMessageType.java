@@ -7,7 +7,7 @@ package org.ql.block.peer.communication.message.thread.enums;
  */
 public enum ThreadMessageType {
   //收到此消息表示网络中有新的块被挖出来了
-  MINTED_BLOCK;
+  MINTED_BLOCK,
   ThreadMessageType() {
   }
 }

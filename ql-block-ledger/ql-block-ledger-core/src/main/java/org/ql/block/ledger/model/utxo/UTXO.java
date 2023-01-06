@@ -5,12 +5,14 @@ import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.ql.block.common.exceptions.BalanceNotEnoughError;
+import org.ql.block.db.sdk.message.ResponseVo;
 import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.model.blockchain.BlockChain;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.ledger.model.blockdata.TXInput;
 import org.ql.block.ledger.model.blockdata.TXOutput;
 import org.ql.block.ledger.model.blockdata.Transaction;
+import org.ql.block.ledger.service.DatabaseService;
 import org.ql.block.ledger.util.ObjectUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.ql.block.ledger.config.LedgerConfig.UTXO_BUCKET;
 
 /**
  * Created at 2022/10/26 9:30
@@ -31,7 +35,8 @@ public class UTXO {
   @Autowired
   private BlockChain blockChain;
 
-  private static final String utxoBucket = "chainstate";
+  @Autowired
+  private DatabaseService databaseService;
 
   public int getBalance(String address, BlockChain blockChain){
     TXOutput[] utxo = findUTXO(address);
@@ -49,10 +54,13 @@ public class UTXO {
    */
   public ConcurrentHashMap<String,UnSpentOutput[]> findSpendableOutputs(String address){
     ConcurrentHashMap<String, UnSpentOutput[]> spendableOutput = new ConcurrentHashMap<>();
-    DB bucket = blockChain.database.getBucket(utxoBucket);
-    DBIterator iterator = bucket.iterator();
-    while (iterator.hasNext()) {
-      Map.Entry<byte[], byte[]> next = iterator.next();
+    databaseService.createBucket(UTXO_BUCKET);
+    Integer total = databaseService.getCount(UTXO_BUCKET);
+    int index = 0;
+    while (index<total){
+      index++;
+      ResponseVo<Map.Entry<byte[], byte[]>> select = databaseService.select(UTXO_BUCKET, index, 1);
+      Map.Entry<byte[], byte[]> next = select.getData().iterator().next();
       ArrayList<UnSpentOutput> utxos = new ArrayList<>();
       byte[] value = next.getValue();
       ArrayList<UnSpentOutput> outputList = ObjectUtil.byteArrayToObject(value, ArrayList.class);
@@ -73,10 +81,12 @@ public class UTXO {
   //找到指定address下的未花费交易
   public UnSpentOutput[] findUTXO(String address){
     ArrayList<UnSpentOutput> utxos = new ArrayList<>();
-    DB bucket = blockChain.database.getBucket(utxoBucket);
-    DBIterator iterator = bucket.iterator();
-    while (iterator.hasNext()) {
-      Map.Entry<byte[], byte[]> next = iterator.next();
+    Integer total = databaseService.getCount(UTXO_BUCKET);
+    int index = 0;
+    while (index<total){
+      index++;
+      ResponseVo<Map.Entry<byte[], byte[]>> select = databaseService.select(UTXO_BUCKET, index, 1);
+      Map.Entry<byte[], byte[]> next = select.getData().iterator().next();
       byte[] value = next.getValue();
       ArrayList<UnSpentOutput> unSpentOutputs = ObjectUtil.byteArrayToObject(value, ArrayList.class);
       for (int i = 0; i < unSpentOutputs.size(); i++) {
@@ -91,12 +101,10 @@ public class UTXO {
 
   public void setReindex(){
     ConcurrentHashMap<String, ArrayList<UnSpentOutput>> utxo = blockChain.FindUTXO();
-    blockChain.database.deleteBuket(utxoBucket);
-    blockChain.database.createBucket(utxoBucket);
+    databaseService.deleteBucket(UTXO_BUCKET);
+    databaseService.createBucket(UTXO_BUCKET);
     utxo.forEach((k,v)->{
-        blockChain.database.update(utxoBucket,bucket->{
-          bucket.put(Iq80DBFactory.bytes(k),ObjectUtil.ObjectToByteArray(v));
-        });
+      databaseService.insertOrUpdate(UTXO_BUCKET,k,ObjectUtil.ObjectToByteArray(v));
     });
   }
 
@@ -105,7 +113,7 @@ public class UTXO {
     BlockData data = block.getData();
     //获取区块体中的交易
     Transaction[] transactions = data.getTransactions();
-    DB bucket = blockChain.database.getBucket(utxoBucket);
+    DB bucket = blockChain.databaseImpl.getBucket(UTXO_BUCKET);
 
     //遍历交易
     for (Transaction tx : transactions) {

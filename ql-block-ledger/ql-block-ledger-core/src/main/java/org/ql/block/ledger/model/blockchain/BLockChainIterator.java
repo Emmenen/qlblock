@@ -2,7 +2,11 @@ package org.ql.block.ledger.model.blockchain;
 
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.impl.Iq80DBFactory;
+import org.ql.block.db.sdk.connect.Connection;
+import org.ql.block.db.sdk.message.ResponseVo;
+import org.ql.block.ledger.config.LedgerConfig;
 import org.ql.block.ledger.model.block.Block;
+import org.ql.block.ledger.service.DatabaseService;
 
 import static org.ql.block.ledger.util.ObjectUtil.byteArrayToObject;
 
@@ -13,14 +17,15 @@ import static org.ql.block.ledger.util.ObjectUtil.byteArrayToObject;
  */
 public class BLockChainIterator {
   public String currentHash;
-  public DB db;
+  public DatabaseService databaseService;
 
-  public BLockChainIterator(String currentHash, DB db) {
+  public BLockChainIterator(String currentHash, DatabaseService databaseService) {
     this.currentHash = currentHash;
-    this.db = db;
+    this.databaseService = databaseService;
   }
   public Block next(){
-    Block block = (Block)byteArrayToObject(db.get(db.get(Iq80DBFactory.bytes(currentHash))));
+    String one = (String) databaseService.selectOne(LedgerConfig.BLOCK_BUCKET, currentHash);
+    Block block =  Block.formByte(one.getBytes());
     currentHash = block.previousHash;
     if (block.getPreviousHash().equals("genesis")){
       return null;

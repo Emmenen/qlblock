@@ -15,15 +15,11 @@
     <dependencies>
         <dependency>
             <groupId>org.ql.block</groupId>
-            <artifactId>ql-block-ledger-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ql.block</groupId>
             <artifactId>ql-block-ledger-security</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ql.block</groupId>
-            <artifactId>ql-block-ledger-db</artifactId>
+            <artifactId>ql-block-db-sdk</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -33,27 +29,7 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.fusesource.leveldbjni/leveldbjni -->
-        <dependency>
-            <groupId>org.fusesource.leveldbjni</groupId>
-            <artifactId>leveldbjni</artifactId>
-        </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb-api -->
-        <dependency>
-            <groupId>org.iq80.leveldb</groupId>
-            <artifactId>leveldb-api</artifactId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb -->
-        <dependency>
-            <groupId>org.iq80.leveldb</groupId>
-            <artifactId>leveldb</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.bitcoin-s/bitcoin-s-core -->
         <!--        <dependency>-->
         <!--            <groupId>org.bitcoin-s</groupId>-->

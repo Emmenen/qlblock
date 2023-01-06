@@ -19,7 +19,7 @@ public class ServerThread implements Runnable{
     private MyServerSocket server;
 
     @Autowired
-    private ClientThreadPool clientThreadPool;
+    private ConnectedThreadPool connectedThreadPool;
 
     @Autowired
     public ServerThread(MyServerSocket server) {
@@ -32,7 +32,7 @@ public class ServerThread implements Runnable{
             while (true){
                 log.info("等待新连接...");
                 Socket accept = server.accept();
-                clientThreadPool.startAClient(accept);
+                connectedThreadPool.startAClient(accept);
                 System.out.println("来自"+accept.getPort()+"的连接成功");
             }
         } catch (IOException e) {

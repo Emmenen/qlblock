@@ -2,7 +2,7 @@ package org.ql.block.peer.context;
 
 import org.ql.block.common.beans.pojo.Peer;
 import org.ql.block.peer.thread.ClientThread;
-import org.ql.block.peer.thread.ThreadFactory;
+import org.ql.block.peer.thread.ThreadConfig.ThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

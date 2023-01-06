@@ -1,5 +1,7 @@
 package org.ql.block.ledger.model.block;
 
+import com.alibaba.fastjson.JSON;
+import org.ql.block.db.sdk.message.ObjectUtil;
 import org.ql.block.ledger.consensus.impl.PowOfWork;
 import org.ql.block.ledger.consensus.impl.PowOfWorkForm;
 import org.ql.block.ledger.model.blockdata.BlockData;
@@ -57,6 +59,8 @@ public abstract class Block implements Serializable {
   public Block(String previousHash, BlockData data) {
     this.previousHash = previousHash;
     this.data = data;
+
+    //执行pow共识
     this.setHash();
     this.timestamp = new Date();
   }
@@ -89,4 +93,21 @@ public abstract class Block implements Serializable {
     return validate;
   }
 
+  public byte[] toByte(){
+    String s = JSON.toJSONString(this);
+    return s.getBytes();
+  }
+
+  public static Block formByte(byte[] bytes){
+    Block block = JSON.parseObject(new String(bytes), Block.class);
+    return block;
+  }
+
+  public static void main(String[] args) {
+    Block block = new Block() {
+    };
+    block.previousHash="11";
+    System.out.println(block);
+    System.out.println(Block.formByte(block.toByte()));
+  }
 }

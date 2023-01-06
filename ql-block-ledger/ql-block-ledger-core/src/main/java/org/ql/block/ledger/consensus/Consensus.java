@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  * email: 592918942@qq.com
  */
 @Service
-public interface Consensus<T> {
+public interface Consensus<T extends ConsensusVO> {
   public Wallet getWallet();
   public boolean validate(Block block);
   public T run(Block block);

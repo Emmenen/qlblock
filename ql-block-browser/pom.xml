@@ -10,30 +10,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ql-block-browser</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>ql-block-browser-api</module>
+        <module>ql-block-browser-service</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <ql.block.version>0.0.1-SNAPSHOT</ql.block.version>
+        <springboot.version></springboot.version>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.ql.block</groupId>
-            <artifactId>ql-block-ledger-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ql.block</groupId>
-            <artifactId>ql-block-ledger-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ql.block</groupId>
-            <artifactId>ql-block-ledger-security</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-    </dependencies>
 </project>

@@ -225,4 +225,15 @@ public class CryptoUtils {
     }
     return publicKey;
   }
+
+  public static KeyPair newKeyPair(){
+    KeyPairGenerator ec = null;
+    try {
+      ec = KeyPairGenerator.getInstance("EC");
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    }
+    KeyPair keyPair = ec.generateKeyPair();
+    return keyPair;
+  }
 }

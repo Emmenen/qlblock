@@ -3,6 +3,9 @@ package org.ql.block.ledger.wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.ql.block.common.exceptions.WalletInformationError;
+import org.ql.block.ledger.communication.wallet.WalletMessageVo;
+import org.ql.block.ledger.communication.wallet.enums.WalletType;
+import org.ql.block.ledger.communication.wallet.message.BeConnected;
 import org.ql.block.ledger.util.ArrayUtils;
 import org.ql.block.ledger.util.Base58;
 import org.ql.block.ledger.util.CryptoUtils;
@@ -16,6 +19,8 @@ import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECPoint;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created at 2022/7/3 13:52
@@ -25,6 +30,8 @@ import java.security.spec.ECPoint;
 @Slf4j
 public class Wallet {
   private static ECPoint G = new ECPoint(new BigInteger("6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296",16),new BigInteger("4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",16));
+
+  private BlockingQueue<WalletMessageVo> walletBlockingQueue = new LinkedBlockingQueue<>();
 
   private Identify user;
 
@@ -60,6 +67,7 @@ public class Wallet {
   public Wallet() {
     fromFile = false;
   }
+
   public boolean isConnected(){
     boolean flag = false;
     if (getUser()!=null){
@@ -68,15 +76,33 @@ public class Wallet {
     return flag;
   }
 
-  public void connectUser(Identify identify){
-    this.user = identify;
+  public boolean waitConnected() throws InterruptedException {
+    WalletMessageVo take = walletBlockingQueue.take();
+    while (!take.getWalletType().equals(WalletType.WALLET_BE_CONNECTED)){
+      walletBlockingQueue.put(take);
+    }
+    if (isConnected())
+    return true;
+    else {
+      log.warn("钱包有被攻击的风险！");
+      return false;
+    }
+  }
+
+  public void setUser(Identify user) throws WalletInformationError {
+    try {
+      walletBlockingQueue.put(new WalletMessageVo(WalletType.WALLET_BE_CONNECTED, new BeConnected()));
+      this.user = user;
+    } catch (InterruptedException e) {
+      throw new WalletInformationError("钱包绑定出错！");
+    }
   }
 
   public Identify connectUser(String priKey) throws WalletInformationError {
     byte[] privateEncode = Base58.decodeToByte(priKey);
     ECPrivateKeyImpl privateKey = (ECPrivateKeyImpl) CryptoUtils.privateKeyReStore(privateEncode);
     Identify user = new Identify(privateKey,CryptoUtils.priGenPub(privateKey));;
-    this.user = user;
+    setUser(user);
     return user;
   }
 
@@ -104,7 +130,7 @@ public class Wallet {
         e.printStackTrace();
       }
     }
-    this.user = user;
+    setUser(user);
     return user;
   }
 

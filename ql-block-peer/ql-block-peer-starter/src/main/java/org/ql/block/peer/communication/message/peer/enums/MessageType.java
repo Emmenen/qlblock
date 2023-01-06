@@ -12,8 +12,9 @@ public enum MessageType {
 
     NEW_ADDR_YOU,NEW_ADDR_YOU_OK,
 
-    SET_BLOCK,GET_BLOCKS, BLOCKS_LIST, BLOCKS_OK;
+    SET_BLOCK,GET_BLOCKS, BLOCKS_LIST, BLOCKS_OK,
 
+    SALVE_APPLY;
 
     MessageType() {
 

@@ -27,7 +27,6 @@ public class WalletAspect {
   private void pointcut() {
   }
 
-
   @Around("pointcut()")
   public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
     Object wallet = SpringContextUtil.getBean("wallet");

@@ -9,7 +9,7 @@ import org.ql.block.peer.communication.message.peer.pojo.SetBlock;
 import org.ql.block.peer.context.PeerContext;
 import org.ql.block.peer.model.MyOutputStream;
 import org.ql.block.peer.model.MySocket;
-import org.ql.block.peer.thread.ThreadFactory;
+import org.ql.block.peer.thread.ThreadConfig.ThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,20 +46,6 @@ public class GossipService {
     return futureTask;
   }
 
-  public static void main(String[] args) {
-    ExecutorService executorService = Executors.newCachedThreadPool();
-    for (int i = 0; i < 3; i++) {
-      executorService.execute(new FutureTask<String>(new Callable<String>() {
-        @Override
-        public String call() throws Exception {
-          Thread.sleep(1000);
-          System.out.println("success");
-          return "success";
-        }
-      }));
-    }
-  }
-
   /**
    * 广播GET_BLOCKS消息
    */
@@ -68,6 +54,7 @@ public class GossipService {
     SetBlock getBLock = new SetBlock(block);
     gossipSpread(getBLock,MessageType.SET_BLOCK);
   }
+
 
   class GossipCallable implements Callable{
     private PeerMessage peerMessage;

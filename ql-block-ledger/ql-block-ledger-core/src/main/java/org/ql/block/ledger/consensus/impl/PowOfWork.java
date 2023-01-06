@@ -5,6 +5,7 @@ import org.ql.block.common.beans.annotation.RequireWallet;
 import org.ql.block.common.config.properties.QlBlockConfiguration;
 import org.ql.block.common.utils.MathUtil;
 import org.ql.block.ledger.consensus.Consensus;
+import org.ql.block.ledger.consensus.ConsensusVO;
 import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.util.CryptoUtils;
 import org.ql.block.ledger.wallet.Wallet;
@@ -21,7 +22,7 @@ import java.math.BigInteger;
  */
 @Service("powOfWork")
 @Slf4j
-public class PowOfWork<T> implements Consensus {
+public class PowOfWork<T extends PowOfWorkForm> implements Consensus {
 
   @Autowired
   public Wallet wallet;
@@ -33,6 +34,7 @@ public class PowOfWork<T> implements Consensus {
   public static BigInteger target = BigInteger.valueOf(1).shiftLeft(256-(3*6));
 
   public PowOfWork() {
+
     //todo通过类名实例化
   }
 
@@ -140,19 +142,4 @@ public class PowOfWork<T> implements Consensus {
     return wallet;
   }
 
-
-//  public static void main(String[] args) {
-//    String data = "000000A6FFE60F75B9493DF9C9F39EFCFF7F2CCE1F305BB34D4C615E1584156B20100000000000000000000000000000000000000000000000000000000002793784";
-//    byte[] digest = CryptoUtils.sha256.digest(data.getBytes());
-//    String sha256Hex = CryptoUtils.encrypt_sha256_hex(data);
-//    System.out.println(sha256Hex);
-//    BigInteger bigInteger = new BigInteger(sha256Hex, 16);
-//    if (bigInteger.abs().compareTo(target) == -1 && bigInteger.compareTo(BigInteger.ZERO) != -1){
-//      System.out.println(true);
-//    }else {
-//      System.out.println(false);
-//    }
-//    System.out.println(new BigInteger(digest));
-//    System.out.println(new BigInteger(digest));
-//  }
 }

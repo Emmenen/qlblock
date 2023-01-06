@@ -2,6 +2,7 @@ package org.ql.block.peer;
 
 
 import org.ql.block.common.config.SpringContextUtil;
+import org.ql.block.ledger.wallet.Wallet;
 import org.ql.block.peer.service.PeerService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

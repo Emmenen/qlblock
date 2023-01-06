@@ -1,6 +1,5 @@
 package org.ql.block.ledger.model.blockdata;
 
-import com.alibaba.fastjson.annotation.JSONField;
 
 import java.io.Serializable;
 import java.util.Objects;

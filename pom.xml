@@ -10,6 +10,10 @@
         <module>ql-block-peer</module>
         <module>ql-block-ledger</module>
         <module>ql-block-browser</module>
+        <module>ql-block-identity</module>
+        <module>ql-block-ledger</module>
+        <module>ql-block-db</module>
+        <module>ql-block-db/ql-block-db-share</module>
     </modules>
 
     <properties>
@@ -26,6 +30,72 @@
     </properties>
     <dependencyManagement>
         <dependencies>
+<!--            ledger -->
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-ledger-common</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-ledger-core</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-ledger-security</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-db-sdk</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
+<!--            browser-->
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-browser-service</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-browser-api</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
+<!--            peer-->
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-peer-sys</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-peer-starter</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-peer-api</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
+
+            <!--       db  -->
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-db-share</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-db-core</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ql.block</groupId>
+                <artifactId>ql-block-db-sdk</artifactId>
+                <version>${ql.block.verison}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-configuration-processor</artifactId>
@@ -42,13 +112,11 @@
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-tx</artifactId>
                 <version>${spring.tx.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.qcloud</groupId>
                 <artifactId>cos_api</artifactId>
@@ -139,6 +207,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-aop</artifactId>
                 <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring.tx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mybatis</groupId>

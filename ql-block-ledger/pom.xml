@@ -15,34 +15,6 @@
     <modules>
         <module>ql-block-ledger-common</module>
         <module>ql-block-ledger-core</module>
-        <module>ql-block-ledger-db</module>
         <module>ql-block-ledger-security</module>
     </modules>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.ql.block</groupId>
-                <artifactId>ql-block-ledger-common</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.ql.block</groupId>
-                <artifactId>ql-block-ledger-core</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.ql.block</groupId>
-                <artifactId>ql-block-ledger-db</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.ql.block</groupId>
-                <artifactId>ql-block-ledger-security</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 </project>
