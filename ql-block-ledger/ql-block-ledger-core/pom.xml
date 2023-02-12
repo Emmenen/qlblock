@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>org.ql.block</groupId>
-            <artifactId>ql-block-ledger-db</artifactId>
+            <artifactId>ql-block-db-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -39,17 +39,7 @@
             <artifactId>leveldbjni</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb-api -->
-        <dependency>
-            <groupId>org.iq80.leveldb</groupId>
-            <artifactId>leveldb-api</artifactId>
-        </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb -->
-        <dependency>
-            <groupId>org.iq80.leveldb</groupId>
-            <artifactId>leveldb</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>

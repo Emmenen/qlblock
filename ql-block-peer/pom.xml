@@ -25,6 +25,7 @@
     <modules>
         <module>ql-block-peer-starter</module>
         <module>ql-block-peer-sys</module>
+        <module>ql-block-peer-api</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -36,11 +37,6 @@
             <dependency>
                 <groupId>org.ql.block</groupId>
                 <artifactId>ql-block-ledger-core</artifactId>
-                <version>${ql.block.verison}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ql.block</groupId>
-                <artifactId>ql-block-ledger-db</artifactId>
                 <version>${ql.block.verison}</version>
             </dependency>
             <dependency>

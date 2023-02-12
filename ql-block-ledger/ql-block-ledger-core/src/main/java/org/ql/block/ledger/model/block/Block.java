@@ -1,9 +1,9 @@
 package org.ql.block.ledger.model.block;
 
+import org.ql.block.common.config.SpringContextUtil;
 import org.ql.block.ledger.consensus.impl.PowOfWork;
 import org.ql.block.ledger.consensus.impl.PowOfWorkForm;
 import org.ql.block.ledger.model.blockdata.BlockData;
-import org.ql.block.common.config.SpringContextUtil;
 import org.ql.block.ledger.model.blockdata.Transaction;
 
 import java.io.Serializable;
@@ -57,6 +57,8 @@ public abstract class Block implements Serializable {
   public Block(String previousHash, BlockData data) {
     this.previousHash = previousHash;
     this.data = data;
+
+    //执行pow共识
     this.setHash();
     this.timestamp = new Date();
   }

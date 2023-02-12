@@ -1,10 +1,15 @@
 package org.ql.block.ledger.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.iq80.leveldb.DB;
 import org.ql.block.common.exceptions.GetBlockError;
+import org.ql.block.db.service.DataBase;
 import org.ql.block.ledger.model.block.Block;
+import org.ql.block.ledger.model.block.SalveBlock;
 import org.ql.block.ledger.model.blockchain.MasterBlockChain;
+import org.ql.block.ledger.model.blockchain.SalveBlockChain;
 import org.ql.block.ledger.service.MasterChainService;
+import org.ql.block.ledger.service.SalveChainService;
 import org.ql.block.ledger.util.MathUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,9 +28,15 @@ public class MasterChainServiceImpl implements MasterChainService {
 
   private MasterBlockChain masterBlockChain;
 
+  private DataBase<DB> dataBase;
+
   @Autowired
-  public MasterChainServiceImpl(MasterBlockChain masterBlockChain) {
+  private SalveChainService salveChainService;
+
+  @Autowired
+  public MasterChainServiceImpl(MasterBlockChain masterBlockChain,DataBase<DB> staticDatabase) {
     this.masterBlockChain = masterBlockChain;
+    this.dataBase = staticDatabase;
   }
 
 
@@ -60,5 +71,19 @@ public class MasterChainServiceImpl implements MasterChainService {
   @Override
   public boolean addBlockAll(Collection<Block> c) {
     return masterBlockChain.addBlockAllStrict(c);
+  }
+
+
+  /**
+   * 新建一条链
+   * @return
+   */
+  public SalveBlock newSalveBlockChain(String chainName){
+    SalveBlockChain salveBlockChain = new SalveBlockChain(dataBase,chainName);
+    /**
+     * 新建的一条链，为申请阶段
+     */
+    SalveBlock salveBlock = salveChainService.applyForNewSalve(salveBlockChain);
+    return salveBlock;
   }
 }

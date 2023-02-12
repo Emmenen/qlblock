@@ -15,7 +15,6 @@
     <modules>
         <module>ql-block-ledger-common</module>
         <module>ql-block-ledger-core</module>
-        <module>ql-block-ledger-db</module>
         <module>ql-block-ledger-security</module>
     </modules>
     <dependencyManagement>

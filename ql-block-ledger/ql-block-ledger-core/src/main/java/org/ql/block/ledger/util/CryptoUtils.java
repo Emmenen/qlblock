@@ -10,7 +10,10 @@ import sun.security.ec.point.MutablePoint;
 import sun.security.util.math.ImmutableIntegerModuloP;
 import sun.security.util.math.IntegerFieldModuloP;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -224,5 +227,16 @@ public class CryptoUtils {
       e.printStackTrace();
     }
     return publicKey;
+  }
+
+  public static KeyPair newKeyPair(){
+    KeyPairGenerator ec = null;
+    try {
+      ec = KeyPairGenerator.getInstance("EC");
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    }
+    KeyPair keyPair = ec.generateKeyPair();
+    return keyPair;
   }
 }

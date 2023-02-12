@@ -1,13 +1,16 @@
-package org.ql.block.ledger.db;
+package org.ql.block.db.service.impl;
 
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBFactory;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.impl.Iq80DBFactory;
-import org.ql.block.common.exceptions.DataBaseIsNotExistError;
+import org.ql.block.db.service.DataBase;
+import org.ql.block.db.service.exceptions.DataBaseIsNotExistError;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 /**
@@ -15,11 +18,10 @@ import java.util.function.Consumer;
  * Author: @Qi Long
  * email: 592918942@qq.com
  */
-public  class Database implements Serializable {
+public class DataBaseImpl<T> implements DataBase,Serializable {
   //判断数据库是否初始化;
   public static final String DB_INIT = "Initialized";
 
-  //
   private String name;
 
   private static DB homeDB;
@@ -34,13 +36,13 @@ public  class Database implements Serializable {
     options.createIfMissing(true);
   }
 
-  public Database(String name,DB db){
+  public DataBaseImpl(String name, DB db){
     this.name = name;
     homeDB = db;
     this.init();
   }
 
-  public Database(String name) {
+  public DataBaseImpl(String name) {
     this.name = name;
     try {
       homeDB = dbFactory.open(new File(this.name), options);
@@ -52,12 +54,17 @@ public  class Database implements Serializable {
     this.init();
   }
 
-  protected void init(){
+  public void init(){
     byte[] bytes = homeDB.get(Iq80DBFactory.bytes(DB_INIT));
     if (null == bytes||bytes.length==0){
       //将key(DB_INIT)赋值,说明该数据库是已经初始化的数据库
       homeDB.put(Iq80DBFactory.bytes(DB_INIT),Iq80DBFactory.bytes(DB_INIT));
     }
+  }
+
+  @Override
+  public Class getBucketClass() {
+    return DB.class;
   }
 
   public DB getBucket(String bucketName){
@@ -103,12 +110,20 @@ public  class Database implements Serializable {
     }
     return db;
   }
-  public void update(String buketName,Consumer< DB > consumer){
-    consumer.accept(getBucket(buketName));
+
+  @Override
+  public DB createIfNotExistBuket(String bucketName) {
+    DB bucket = getBucket(bucketName);
+    if (bucket==null){
+      bucket =  createBucket(bucketName);
+    }
+    return bucket;
   }
 
 
-
+  public void update(String buketName,Consumer consumer){
+    consumer.accept(getBucket(buketName));
+  }
   public void close() throws IOException {
     bucketMap.forEach((s, entries) ->
     {
@@ -125,24 +140,24 @@ public  class Database implements Serializable {
    * @param dbName
    * @return
    */
-  public Database connect(String dbName) throws DataBaseIsNotExistError {
+  public DataBaseImpl connect(String dbName) throws DataBaseIsNotExistError {
     DB db = getBucket(dbName);
-    Database database = null;
+    DataBaseImpl databaseImpl = null;
     if (null==db){
       throw new DataBaseIsNotExistError("连接数据库失败，数据库不存在！");
     }else {
-      database = new Database(name+"/"+dbName, db);
+      databaseImpl = new DataBaseImpl(name+"/"+dbName, db);
     }
-    return database;
+    return databaseImpl;
   }
 
-  public Database createDatabase(String dbName){
+  public DataBaseImpl createDatabase(String dbName){
     DB db = getBucket(dbName);
-    Database database;
+    DataBaseImpl databaseImpl;
     if (null==db){
       db = this.createBucket(dbName);
     }
-    database = new Database(name+"/"+dbName, db);
-    return database;
+    databaseImpl = new DataBaseImpl(name+"/"+dbName, db);
+    return databaseImpl;
   }
 }

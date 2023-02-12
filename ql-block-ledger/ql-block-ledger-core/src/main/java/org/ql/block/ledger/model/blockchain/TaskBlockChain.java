@@ -3,9 +3,9 @@ package org.ql.block.ledger.model.blockchain;
 import org.jetbrains.annotations.NotNull;
 import org.ql.block.common.beans.annotation.AddBlock;
 import org.ql.block.common.exceptions.GetBlockError;
+import org.ql.block.db.service.DataBase;
 import org.ql.block.ledger.model.block.TaskBlock;
 import org.ql.block.ledger.model.blockdata.BlockData;
-import org.ql.block.ledger.db.Database;
 import org.ql.block.ledger.model.block.Block;
 
 import java.util.LinkedList;
@@ -18,7 +18,7 @@ import java.util.LinkedList;
  */
 public class TaskBlockChain extends BlockChain{
 
-  public TaskBlockChain(Database staticDatabase) {
+  public TaskBlockChain(DataBase staticDatabase) {
     super(staticDatabase);
     ChainName = "Task";
     this.init(staticDatabase);

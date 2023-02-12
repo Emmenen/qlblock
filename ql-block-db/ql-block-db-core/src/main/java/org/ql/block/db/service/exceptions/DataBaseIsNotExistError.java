@@ -1,4 +1,4 @@
-package org.ql.block.common.exceptions;
+package org.ql.block.db.service.exceptions;
 
 /**
  * Created at 2022/7/14 0:48

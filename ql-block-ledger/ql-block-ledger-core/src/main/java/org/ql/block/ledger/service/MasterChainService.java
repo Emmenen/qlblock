@@ -2,6 +2,7 @@ package org.ql.block.ledger.service;
 
 import org.ql.block.common.exceptions.GetBlockError;
 import org.ql.block.ledger.model.block.Block;
+import org.ql.block.ledger.model.block.SalveBlock;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,5 +32,5 @@ public interface MasterChainService {
 
   public boolean addBlockAll(Collection<Block> c);
 
-
+  public SalveBlock newSalveBlockChain(String chainName);
 }

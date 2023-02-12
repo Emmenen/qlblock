@@ -1,6 +1,5 @@
 package org.ql.block.ledger.model.block;
 
-import org.ql.block.ledger.model.blockchain.MasterBlockChain;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.ledger.model.blockdata.Transaction;
 

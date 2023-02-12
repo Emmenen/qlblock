@@ -1,13 +1,17 @@
 package org.ql.block.ledger.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.iq80.leveldb.DB;
 import org.ql.block.common.config.properties.QlBlockConfiguration;
 import org.ql.block.common.exceptions.WalletInformationError;
+import org.ql.block.db.service.DataBase;
+import org.ql.block.ledger.model.blockchain.MasterBlockChain;
 import org.ql.block.ledger.wallet.Identify;
 import org.ql.block.ledger.wallet.Wallet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Created at 2022/7/16 1:51
@@ -40,4 +44,10 @@ public class BeanFactory {
     return wallet;
   }
 
+  @Bean("masterChain")
+  @DependsOn("staticDatabase")
+  @Autowired
+  public MasterBlockChain masterBlockChain(DataBase<DB> staticDatabase){
+    return new MasterBlockChain(staticDatabase);
+  }
 }

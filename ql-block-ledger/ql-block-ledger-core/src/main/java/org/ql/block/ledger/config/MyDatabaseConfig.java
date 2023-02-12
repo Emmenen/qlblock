@@ -1,6 +1,7 @@
 package org.ql.block.ledger.config;
 
-import org.ql.block.ledger.db.Database;
+import org.ql.block.db.service.DataBase;
+import org.ql.block.db.service.impl.DataBaseImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -17,8 +18,8 @@ public class MyDatabaseConfig {
 
   @Bean("staticDatabase")
   @DependsOn("springContextUtil")
-  public Database levelDB(){
-    return new Database(dbName);
+  public DataBase levelDB(){
+    return new DataBaseImpl(dbName);
   }
 }
 

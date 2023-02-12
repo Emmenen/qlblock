@@ -7,6 +7,10 @@ import java.io.Serializable;
  * Author: @Qi Long
  * email: 592918942@qq.com
  */
-public class CurrencyData implements Serializable {
+public class CurrencyData extends BlockData implements Serializable {
+
+  public CurrencyData(Transaction[] transactions) {
+    super(transactions);
+  }
 
 }

@@ -5,10 +5,10 @@ import org.iq80.leveldb.DB;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
 import org.ql.block.common.beans.annotation.AddBlock;
-import org.ql.block.ledger.db.Database;
 import org.ql.block.common.exceptions.BlockOrderError;
-import org.ql.block.common.exceptions.DataBaseIsNotExistError;
+import org.ql.block.db.service.exceptions.DataBaseIsNotExistError;
 import org.ql.block.common.exceptions.GetBlockError;
+import org.ql.block.db.service.DataBase;
 import org.ql.block.ledger.model.block.Block;
 import org.ql.block.ledger.model.blockdata.BlockData;
 import org.ql.block.ledger.model.blockdata.Transaction;
@@ -16,7 +16,10 @@ import org.ql.block.ledger.model.utxo.UnSpentOutput;
 import org.ql.block.ledger.util.MathUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.ql.block.ledger.util.ObjectUtil.ObjectToByteArray;
@@ -49,25 +52,25 @@ public abstract class BlockChain {
    */
   public int deep;
 
-  public Database database;
+  public DataBase<DB> dataBaseImpl;
 
 
   @Autowired
-  public BlockChain(Database staticDatabase) {
-    this.database = staticDatabase;
+  public BlockChain(DataBase staticDatabase) {
+    this.dataBaseImpl = staticDatabase;
   }
 
-  protected void init(Database staticDatabase){
+  protected void init(DataBase staticDatabase){
     try {
-      this.database = staticDatabase.connect(ChainName);
+      this.dataBaseImpl = staticDatabase.connect(ChainName);
     } catch (DataBaseIsNotExistError e) {
       staticDatabase.createBucket(ChainName);
-      this.database = staticDatabase.createDatabase(ChainName);
+      this.dataBaseImpl = staticDatabase.createDatabase(ChainName);
     }
 
-    this.bucketBucketDb = this.database.getBucket(BLOCK_BUCKET);
+    this.bucketBucketDb = this.dataBaseImpl.getBucket(BLOCK_BUCKET);
     if (null==bucketBucketDb) {
-      this.bucketBucketDb = database.createBucket(BLOCK_BUCKET);
+      this.bucketBucketDb = dataBaseImpl.createBucket(BLOCK_BUCKET);
       Block block = this.newGenesisBlock();
       this.deep = -1;
       addBlock(block);
@@ -145,7 +148,7 @@ public abstract class BlockChain {
       //高度为-1时，则说明区块高度没有被初始化
       block.height = deepPre;
     }
-    database.update(BLOCK_BUCKET, bucket ->{
+    dataBaseImpl.update(BLOCK_BUCKET, bucket ->{
       if (!block.previousHash.equals(tip)){
         return;
       }

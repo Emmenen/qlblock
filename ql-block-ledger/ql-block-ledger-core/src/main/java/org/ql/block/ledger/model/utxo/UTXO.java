@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.ql.block.ledger.config.LedgerConfig.utxoBucket;
+
 /**
  * Created at 2022/10/26 9:30
  * Author: @Qi Long
@@ -31,7 +33,6 @@ public class UTXO {
   @Autowired
   private BlockChain blockChain;
 
-  private static final String utxoBucket = "chainstate";
 
   public int getBalance(String address, BlockChain blockChain){
     TXOutput[] utxo = findUTXO(address);
@@ -49,7 +50,7 @@ public class UTXO {
    */
   public ConcurrentHashMap<String,UnSpentOutput[]> findSpendableOutputs(String address){
     ConcurrentHashMap<String, UnSpentOutput[]> spendableOutput = new ConcurrentHashMap<>();
-    DB bucket = blockChain.database.getBucket(utxoBucket);
+    DB bucket = blockChain.dataBaseImpl.getBucket(utxoBucket);
     DBIterator iterator = bucket.iterator();
     while (iterator.hasNext()) {
       Map.Entry<byte[], byte[]> next = iterator.next();
@@ -73,7 +74,7 @@ public class UTXO {
   //找到指定address下的未花费交易
   public UnSpentOutput[] findUTXO(String address){
     ArrayList<UnSpentOutput> utxos = new ArrayList<>();
-    DB bucket = blockChain.database.getBucket(utxoBucket);
+    DB bucket = blockChain.dataBaseImpl.getBucket(utxoBucket);
     DBIterator iterator = bucket.iterator();
     while (iterator.hasNext()) {
       Map.Entry<byte[], byte[]> next = iterator.next();
@@ -91,10 +92,10 @@ public class UTXO {
 
   public void setReindex(){
     ConcurrentHashMap<String, ArrayList<UnSpentOutput>> utxo = blockChain.FindUTXO();
-    blockChain.database.deleteBuket(utxoBucket);
-    blockChain.database.createBucket(utxoBucket);
+    blockChain.dataBaseImpl.deleteBuket(utxoBucket);
+    blockChain.dataBaseImpl.createBucket(utxoBucket);
     utxo.forEach((k,v)->{
-        blockChain.database.update(utxoBucket,bucket->{
+        blockChain.dataBaseImpl.update(utxoBucket, bucket->{
           bucket.put(Iq80DBFactory.bytes(k),ObjectUtil.ObjectToByteArray(v));
         });
     });
@@ -105,7 +106,7 @@ public class UTXO {
     BlockData data = block.getData();
     //获取区块体中的交易
     Transaction[] transactions = data.getTransactions();
-    DB bucket = blockChain.database.getBucket(utxoBucket);
+    DB bucket = blockChain.dataBaseImpl.getBucket(utxoBucket);
 
     //遍历交易
     for (Transaction tx : transactions) {

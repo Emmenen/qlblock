@@ -1,7 +1,6 @@
 package org.ql.block.ledger.model.blockdata;
 
 import org.ql.block.ledger.util.CryptoUtils;
-import org.ql.block.ledger.util.ObjectUtil;
 
 import java.io.Serializable;
 import java.security.DigestException;

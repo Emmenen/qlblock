@@ -1,11 +1,8 @@
 package org.ql.block.ledger.model;
 
 import org.ql.block.ledger.model.block.Block;
-import org.springframework.context.annotation.Bean;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 
 /**
  * Created at 2022/10/7 15:44
